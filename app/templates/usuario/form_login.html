@@ -1,0 +1,16 @@
+<form action=" {{ url_for('registro_login') }} " method="POST">
+<table>
+	{{ form_login.hidden_tag() }}
+	<tr>
+		<td>Usuário</td>
+		<td>{{ form_login.usuario }}
+	</tr>
+	<tr>
+		<td>Senha</td>
+		<td>{{ form_login.senha }}</td>
+	</tr>
+	<tr>
+		<td><input type="submit" value="Login" /></td>
+	</tr>
+</table>
+</form>

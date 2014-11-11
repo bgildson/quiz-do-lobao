@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<table>
+	<tr>
+		<td>
+			{% include 'usuario/form_registro.html' %}
+		</td>
+		<td>
+			{% include 'usuario/form_login.html' %}
+		</td>
+	</tr>
+</table>
+{% endblock %}
