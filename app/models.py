@@ -1,17 +1,23 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from app import db
+import hashlib
+import time
 
 class Usuario(db.Model):
-	__tablename__ = 'cad_usuarios'
+	__tablename__ = 'usuarios'
 
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	usuario = db.Column(db.String(20), unique=True)
-	senha = db.Column(db.String)
+	senha = db.Column(db.String(32))
+	email = db.Column(db.String(70))
+	data_cadastro = db.Column(db.Datetime)
 
-	def __init__(self, usuario, senha):
+	def __init__(self, usuario, senha, email):
 		self.usuario = usuario
-		self.senha = senha
+		self.senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
+		self.email = email
+		self.data_cadastro = time.strftime('%Y-%m-%d %H:%M:%S')
 
 class Questao(db.Model):
 	__tablename__ = 'cad_questoes'
