@@ -35,12 +35,14 @@ class Questao(db.Model):
 	__tablename__ = 'cad_questoes'
 
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	descricao = db.Column(db.String(255))
+	enunciado = db.Column(db.String(255))
 	ativo = db.Column(db.Binary)
+	alternativa_correta = db.Column(db.String(1))
 	alternativas = relationship('Alternativa')
 
-	def __init__(self, descricao):
-		self.descricao = descricao
+	def __init__(self, enunciado, alternativa_correta):
+		self.enunciado = enunciado
+		self.alternativa_correta = alternativa_correta
 		self.ativo = False
 
 class Alternativa(db.Model):

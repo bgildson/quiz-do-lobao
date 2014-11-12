@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<form action="{{ url_for('questao_novo') }}" method="POST">
+<table>
+	<tr>
+		<td>{{ form.enunciado.label }}</td>
+		<td>{{ form.enunciado }}</td>
+	</tr>
+	<tr>
+		<td>{{ form.alternativa_a.label }}</td>
+		<td>{{ form.alternativa_a }}</td>
+	</tr>
+	<tr>
+		<td>{{ form.alternativa_b.label }}</td>
+		<td>{{ form.alternativa_b }}</td>
+	</tr>
+	<tr>
+		<td>{{ form.alternativa_c.label }}</td>
+		<td>{{ form.alternativa_c }}</td>
+	</tr>
+	<tr>
+		<td>{{ form.alternativa_e.label }}</td>
+		<td>{{ form.alternativa_d }}</td>
+	</tr>
+	<tr>
+		<td>{{ form.alternativa_e.label }}</td>
+		<td>{{ form.alternativa_e }}</td>
+	</tr>
+	<tr>
+		<td><input type="submit" value="Cadastrar" /></td>
+	</tr>
+</table>
+</form>
+{% endblock %}

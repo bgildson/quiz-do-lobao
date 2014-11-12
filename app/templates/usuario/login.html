@@ -9,14 +9,14 @@
 	</tr>
 	{% endfor %}
 	<tr>
-		<td>Usuário</td>
+		<td>{{ form.usuario.label }}</td>
 		<td>{{ form.usuario }}
 			{% for error in form.usuario.errors %}
 			<span style="color:red"> [{{ error }}] </span>
 			{% endfor %}</td>
 	</tr>
 	<tr>
-		<td>Senha</td>
+		<td>{{ form.senha.label }}</td>
 		<td>{{ form.senha }}
 			{% for error in form.senha.errors %}
 			<span style="color:red"> [{{ error }}] </span>

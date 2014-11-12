@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask.ext.login import LoginManager, current_user, login_user, logout_user, login_required
 from app import app, db, forms
-from app.models import Usuario
+from app.models import Usuario, Questao, Alternativa
 import hashlib
+from simplejson import dumps
 
 lm = LoginManager()
 lm.init_app(app)
@@ -64,3 +65,32 @@ def registro():
 def logout():
 	logout_user()
 	return redirect( url_for('login') )
+
+
+@app.route('/jogar')
+@login_required
+def jogar():
+	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
+
+	return 'ok'
+
+@app.route('/questao')
+@login_required
+def questao():
+	questoes = db.session.query(Questao).all()
+	n = len(questoes)
+	return dumps(questoes)
+	#return jsonify(dumps(questoes))
+
+@app.route('/questao/novo', methods=['GET', 'POST'])
+@login_required
+def questao_novo():
+	form = forms.QuestaoForm()
+
+	if form.validate_on_submit():
+		questao = Questao(form.enunciado.data, 'alternativa correta')
+		if questao:
+			db.session.add(questao)
+			db.session.commit()
+			flash('Questão cadastrada com sucesso!')
+	return render_template('questao/novo.html', form=form)

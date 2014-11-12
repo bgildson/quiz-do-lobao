@@ -9,28 +9,28 @@
 	</tr>
 	{% endfor %}
 	<tr>
-		<td>Usuário</td>
+		<td>{{ form.usuario.label }}</td>
 		<td>{{ form.usuario }}
 			{% for error in form.usuario.errors %}
 			<span style="color:red"> [{{ error }}] </span>
 			{% endfor %}</td>
 	</tr>
 	<tr>
-		<td>E-mail</td>
+		<td>{{ form.email.label }}</td>
 		<td>{{ form.email }}
 			{% for error in form.email.errors %}
 			<span style="color:red"> [{{ error }}] </span>
 			{% endfor %}</td>
 	</tr>
 	<tr>
-		<td>Senha</td>
+		<td>{{ form.senha.label }}</td>
 		<td>{{ form.senha }}
 			{% for error in form.senha.errors %}
 			<span style="color:red"> [{{ error }}] </span>
 			{% endfor %}</td>
 	</tr>
 	<tr>
-		<td>Confirmação de Senha</td>
+		<td>{{ form.confirma_senha.label }}</td>
 		<td>{{ form.confirma_senha }}
 			{% for error in form.confirma_senha.errors %}
 			<span style="color:red"> [{{ error }}] </span>
