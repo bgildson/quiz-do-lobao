@@ -2,7 +2,6 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from app import db
 import hashlib
-#import time
 from datetime import datetime
 
 class Usuario(db.Model):
@@ -18,7 +17,7 @@ class Usuario(db.Model):
 		self.usuario = usuario.lower()
 		self.email = email.lower()
 		self.senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
-		self.data_cadastro = datetime.now() #time.strftime('%Y-%m-%d %H:%M:%S')
+		self.data_cadastro = datetime.now()
 
 	def is_authenticated(self):
 		return True

@@ -13,18 +13,6 @@ lm.login_view = 'registro_login'
 def home():
 	return 'ok'
 
-#@app.route('/acesso', methods=['GET', 'POST'])
-def acesso():
-	pass
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-	pass
-
-@app.route('/registro')
-def registro():
-	pass
-
 @app.route('/acesso', methods=['GET', 'POST'])
 def registro_login():
 	# cria os formularios presentes na pagina
@@ -33,7 +21,7 @@ def registro_login():
 
 	# verifica se houve uma solicitacao de login
 	if form_login.validate_on_submit():
-		usuario = db.session.query(Usuario).filter_by(usuario=form_login.usuario.data.lower(), senha=hashlib.md5(form_login.senha.data.encode('utf-8')).hexdigest()).first()
+		usuario = db.session.query(Usuario).filter_by(usuario=form_login.usuario_.data.lower(), senha=hashlib.md5(form_login.senha_.data.encode('utf-8')).hexdigest()).first()
 		if usuario:
 			login_user(usuario)
 

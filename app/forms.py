@@ -10,5 +10,5 @@ class UsuarioRegistroForm(Form):
 	confirma_senha = PasswordField('confirma_senha', validators=[Required('O campo "Confirmação de Senha" é obrigatório.'), EqualTo('senha', 'Preencha os campos de senha corretamente.')])
 
 class UsuarioLoginForm(Form):
-	usuario = TextField('usuario', validators=[Required('O campo "Usuário" é obrigatório.')])
-	senha = TextField('senha', validators=[Required('O campo "Senha" é obrigatório.')])
+	usuario_ = TextField('usuario_', validators=[Required('O campo "Usuário" é obrigatório.')])
+	senha_ = PasswordField('senha_', validators=[Required('O campo "Senha" é obrigatório.')])
