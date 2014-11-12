@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<form action=" {{ url_for('registro') }} " method="POST">
+<table>
+	{{ form.hidden_tag() }}
+	{% for error in get_flashed_messages(category_filter=['registro']) %}
+	<tr>
+		<td colspan="2">{{ error }}</td>
+	</tr>
+	{% endfor %}
+	<tr>
+		<td>Usuário</td>
+		<td>{{ form.usuario }}
+			{% for error in form.usuario.errors %}
+			<span style="color:red"> [{{ error }}] </span>
+			{% endfor %}</td>
+	</tr>
+	<tr>
+		<td>E-mail</td>
+		<td>{{ form.email }}
+			{% for error in form.email.errors %}
+			<span style="color:red"> [{{ error }}] </span>
+			{% endfor %}</td>
+	</tr>
+	<tr>
+		<td>Senha</td>
+		<td>{{ form.senha }}
+			{% for error in form.senha.errors %}
+			<span style="color:red"> [{{ error }}] </span>
+			{% endfor %}</td>
+	</tr>
+	<tr>
+		<td>Confirmação de Senha</td>
+		<td>{{ form.confirma_senha }}
+			{% for error in form.confirma_senha.errors %}
+			<span style="color:red"> [{{ error }}] </span>
+			{% endfor %}</td>
+	</tr>
+	<tr>
+		<td><input type="submit" value="Cadastrar" /></td>
+	</tr>
+</table>
+</form>
+<a href="{{ url_for('login') }}">Fazer Login</a>
+{% endblock %}
