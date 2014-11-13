@@ -3,8 +3,9 @@ from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask.ext.login import LoginManager, current_user, login_user, logout_user, login_required
 from app import app, db, forms
 from app.models import Usuario, Questao, Alternativa
-import hashlib
 from simplejson import dumps
+import hashlib
+
 
 lm = LoginManager()
 lm.init_app(app)
@@ -51,11 +52,8 @@ def registro():
 
 		if not (usuario or email):
 			usuario = Usuario(form.usuario.data, form.email.data, form.senha.data)
-			print(usuario._id)
 			db.session.add(usuario)
-			print(usuario._id)
 			db.session.commit()
-			print(usuario._id)
 			if usuario:
 				login_user(usuario)
 
@@ -82,7 +80,7 @@ def jogar():
 def questao():
 	questoes = db.session.query(Questao).all()
 	n = len(questoes)
-	return render_template('/questao/lista.html', questoes=questoes)
+	return render_template('/questao/listar.html', questoes=questoes)
 	#dumps(questoes)
 	#return jsonify(dumps(questoes))
 
@@ -93,7 +91,7 @@ def questao_novo():
 	
 	if form.validate_on_submit():
 		
-		questao = Questao(form.enunciado.data, 'A') #ajustar alternativa correta
+		questao = Questao(form.enunciado.data, 'b') #ajustar alternativa correta
 		db.session.add(questao)
 		db.session.commit()
 		
@@ -110,7 +108,41 @@ def questao_novo():
 		db.session.add(alternativa_e)
 		db.session.commit()
 
-		flash('Questão cadastrada com sucesso!')
-		form.reset()
+		#flash('Questão cadastrada com sucesso!')
+		return redirect( url_for('questao'))
 		
-	return render_template('questao/novo.html', form=form)
+	return render_template('/questao/novo.html', form=form)
+
+@app.route('/questao/editar/<int:id>')
+@login_required
+def questao_editar(id):
+	form = forms.QuestaoForm()
+
+	if id:
+		questao = db.session.query(Questao).filter_by(_id=id).first()
+		if questao:
+			form.init_questao(questao)
+		else:
+			flash('Nenhum registro encontrado para a solicitação.')
+
+	return render_template('/questao/editar.html', form=form, _id=questao._id)
+
+@app.route('/questao/editar/<int:id>', methods=['POST'])
+@login_required
+def questao_salvar(id):
+	form = forms.QuestaoForm()
+
+	if id:
+		questao = db.session.query(Questao).filter_by(_id=id).first()
+		if form.validate_on_submit():
+			print(dir(questao))
+			db.session.update(questao)
+			db.session.commit()
+			return redirect( url_for('questao') )
+		else:
+			if questao:
+				form.init_questao(questao)
+		
+		return redirect( url_for('questao') )
+
+	return render_template('/questao/editar.html', form=form, _id=questao._id)

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block conteudo %}
-<form action="{{ url_for('questao_novo') }}" method="POST">
+<form action="/questao/editar/{{ _id }}" method="POST">
 <table>
 	{{ form.hidden_tag() }}
 	{% for message in get_flashed_messages() %}
@@ -10,10 +10,7 @@
 	{% endfor %}
 	<tr>
 		<td>{{ form.enunciado.label }}</td>
-		<td>{{ form.enunciado }}
-			{% for error in form.enunciado.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
+		<td>{{ form.enunciado }}</td>
 	</tr>
 	<tr>
 		<td>{{ form.alternativa_a.label }}</td>
@@ -58,7 +55,7 @@
 			{% endfor %}</td>
 	</tr>
 	<tr>
-		<td><input type="submit" value="Cadastrar" /></td>
+		<td><input type="submit" value="Atualizar" /></td>
 	</tr>
 </table>
 </form>
