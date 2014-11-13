@@ -51,8 +51,11 @@ def registro():
 
 		if not (usuario or email):
 			usuario = Usuario(form.usuario.data, form.email.data, form.senha.data)
+			print(usuario._id)
 			db.session.add(usuario)
+			print(usuario._id)
 			db.session.commit()
+			print(usuario._id)
 			if usuario:
 				login_user(usuario)
 
@@ -79,18 +82,35 @@ def jogar():
 def questao():
 	questoes = db.session.query(Questao).all()
 	n = len(questoes)
-	return dumps(questoes)
+	return render_template('/questao/lista.html', questoes=questoes)
+	#dumps(questoes)
 	#return jsonify(dumps(questoes))
 
 @app.route('/questao/novo', methods=['GET', 'POST'])
 @login_required
 def questao_novo():
 	form = forms.QuestaoForm()
-
+	
 	if form.validate_on_submit():
-		questao = Questao(form.enunciado.data, 'alternativa correta')
-		if questao:
-			db.session.add(questao)
-			db.session.commit()
-			flash('Questão cadastrada com sucesso!')
+		
+		questao = Questao(form.enunciado.data, 'A') #ajustar alternativa correta
+		db.session.add(questao)
+		db.session.commit()
+		
+		alternativa_a = Alternativa(form.alternativa_a.data, questao)
+		alternativa_b = Alternativa(form.alternativa_b.data, questao)
+		alternativa_c = Alternativa(form.alternativa_c.data, questao)
+		alternativa_d = Alternativa(form.alternativa_d.data, questao)
+		alternativa_e = Alternativa(form.alternativa_e.data, questao)
+		
+		db.session.add(alternativa_a)
+		db.session.add(alternativa_b)
+		db.session.add(alternativa_c)
+		db.session.add(alternativa_d)
+		db.session.add(alternativa_e)
+		db.session.commit()
+
+		flash('Questão cadastrada com sucesso!')
+		form.reset()
+		
 	return render_template('questao/novo.html', form=form)

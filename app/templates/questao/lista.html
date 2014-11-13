@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block conteudo %}
+<table>
+	<tr>
+		<td>Enunciado</td>
+		<td>Alternativa A</td>
+		<td>Alternativa B</td>
+		<td>Alternativa C</td>
+		<td>Alternativa D</td>
+		<td>Alternativa E</td>
+	</tr>
+	{% for questao in questoes %}
+	<tr>
+		<td>{{ questao.enunciado }}</td>
+		<td>{{ questao.alternativas[0].descricao }}</td>
+		<td>{{ questao.alternativas[1].descricao }}</td>
+		<td>{{ questao.alternativas[2].descricao }}</td>
+		<td>{{ questao.alternativas[3].descricao }}</td>
+		<td>{{ questao.alternativas[4].descricao }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endblock %}

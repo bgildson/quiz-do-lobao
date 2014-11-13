@@ -2,6 +2,12 @@
 {% block conteudo %}
 <form action="{{ url_for('questao_novo') }}" method="POST">
 <table>
+	{{ form.hidden_tag() }}
+	{% for message in get_flashed_messages() %}
+	<tr>
+		<td colspan='2'> {{ message }} </td>
+	</tr>
+	{% endfor %}
 	<tr>
 		<td>{{ form.enunciado.label }}</td>
 		<td>{{ form.enunciado }}</td>

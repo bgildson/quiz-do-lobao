@@ -36,7 +36,7 @@ class Questao(db.Model):
 
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	enunciado = db.Column(db.String(255))
-	ativo = db.Column(db.Binary)
+	ativo = db.Column(db.Boolean)
 	alternativa_correta = db.Column(db.String(1))
 	alternativas = relationship('Alternativa')
 

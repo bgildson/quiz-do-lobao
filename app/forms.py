@@ -2,6 +2,7 @@
 from flask.ext.wtf import Form
 from wtforms import TextField, PasswordField, TextAreaField
 from wtforms.validators import Required, Length, EqualTo, Email
+from werkzeug.datastructures import MultiDict
 
 class UsuarioRegistroForm(Form):
 	usuario = TextField('Usuário', validators=[Required('O campo "Usuário" é obrigatório.'), Length(max=20, message='O nome do usuário deve conter no máximo 20 caracteres')])
@@ -20,3 +21,7 @@ class QuestaoForm(Form):
 	alternativa_c = TextField('Alternativa C', validators=[Required('O campo "Alternativa C" é obrigatório.')])
 	alternativa_d = TextField('Alternativa D', validators=[Required('O campo "Alternativa D" é obrigatório.')])
 	alternativa_e = TextField('Alternativa E', validators=[Required('O campo "Alternativa E" é obrigatório.')])
+
+	def reset(self):
+		blankData = MultiDict([ ('csrf', self.reset_csrf() ) ])
+		self.process(blankData)
