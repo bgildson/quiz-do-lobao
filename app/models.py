@@ -37,13 +37,18 @@ class Questao(db.Model):
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	enunciado = db.Column(db.String(255))
 	ativo = db.Column(db.Boolean)
-	alternativa_correta = db.Column(db.String(1))
+	alternativa_correta_id = db.Column(db.Integer, ForeignKey('cad_alternativas._id'))
 	alternativas = relationship('Alternativa')
 
 	def __init__(self, enunciado, alternativa_correta):
 		self.enunciado = enunciado
 		self.alternativa_correta = alternativa_correta
 		self.ativo = False
+
+	def init_from_QuestaoForm(form):
+		self.enunciado = form.enunciado.data
+		self.ativo = form.ativo.data
+		self.alternativa_correta = form.alternativa_correta.data
 
 class Alternativa(db.Model):
 	__tablename__ = 'cad_alternativas'

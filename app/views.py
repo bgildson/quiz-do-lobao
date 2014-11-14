@@ -121,11 +121,12 @@ def questao_editar(id):
 	if id:
 		questao = db.session.query(Questao).filter_by(_id=id).first()
 		if questao:
-			form.init_questao(questao)
-		else:
-			flash('Nenhum registro encontrado para a solicitação.')
+			form.init_from_Questao(questao)
+			return render_template('/questao/editar.html', form=form, _id=questao._id)
 
-	return render_template('/questao/editar.html', form=form, _id=questao._id)
+		flash('A questão solicitada não existe ou não está mais disponível.')
+
+	return redirect( url_for('questao') )
 
 @app.route('/questao/editar/<int:id>', methods=['POST'])
 @login_required
@@ -136,13 +137,24 @@ def questao_salvar(id):
 		questao = db.session.query(Questao).filter_by(_id=id).first()
 		if form.validate_on_submit():
 			print(dir(questao))
+			# ajustar os valores do objeto questao
+			# ajustar os valores das alternativas
+			alternativas = db.session.query(Alternativa).filter_by(questao_id=questao._id).all()
+			alternativas[0].descricao = form.alternativa_a.data
+			alternativas[1].descricao = form.alternativa_b.data
+			alternativas[2].descricao = form.alternativa_c.data
+			alternativas[3].descricao = form.alternativa_d.data
+			alternativas[4].descricao = form.alternativa_e.data
 			db.session.update(questao)
+			db.session.update(alternativas)
 			db.session.commit()
 			return redirect( url_for('questao') )
 		else:
 			if questao:
-				form.init_questao(questao)
+				form.init_from_Questao(questao)
 		
 		return redirect( url_for('questao') )
 
-	return render_template('/questao/editar.html', form=form, _id=questao._id)
+		return render_template('/questao/editar.html', form=form, _id=questao._id)
+
+	return redirect( url_for('questao') )

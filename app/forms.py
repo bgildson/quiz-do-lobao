@@ -27,14 +27,11 @@ class QuestaoForm(Form):
 	cadastrada_por = TextField('Cadastrada por')
 	data_cadastro = DateField('Data de Cadastro')
 
-	def init_questao(self, questao):
+	def init_from_Questao(self, questao):
 		self.enunciado.data = questao.enunciado
 		self.alternativa_a.data = questao.alternativas[0].descricao
 		self.alternativa_b.data = questao.alternativas[1].descricao
 		self.alternativa_c.data = questao.alternativas[2].descricao
 		self.alternativa_d.data = questao.alternativas[3].descricao
 		self.alternativa_e.data = questao.alternativas[4].descricao
-		print(dir(self.alternativa_correta))
 		self.alternativa_correta.data = questao.alternativa_correta
-		print(questao.alternativa_correta)
-		#self.alternativa_correta.populate_obj([ x.descricao for x in ['a', 'b', 'c', 'd', 'e'] if x == questao.alternativa_correta: ]) = questao.alternativa_correta
