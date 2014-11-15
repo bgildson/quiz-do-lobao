@@ -2,10 +2,9 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask.ext.login import LoginManager, current_user, login_user, logout_user, login_required
 from app import app, db, forms
-from app.models import Usuario, Questao, Alternativa
+from app.models import Usuario, Questao
 from simplejson import dumps
 import hashlib
-
 
 lm = LoginManager()
 lm.init_app(app)
@@ -91,29 +90,17 @@ def questao_novo():
 	
 	if form.validate_on_submit():
 		
-		questao = Questao(form.enunciado.data, 'b') #ajustar alternativa correta
+		questao = Questao(form.enunciado.data, form.alternativa_a.data, form.alternativa_b.data, form.alternativa_c.data, \
+			 form.alternativa_d.data, form.alternativa_e.data, form.alternativa_correta.data, current_user)
 		db.session.add(questao)
 		db.session.commit()
 		
-		alternativa_a = Alternativa(form.alternativa_a.data, questao)
-		alternativa_b = Alternativa(form.alternativa_b.data, questao)
-		alternativa_c = Alternativa(form.alternativa_c.data, questao)
-		alternativa_d = Alternativa(form.alternativa_d.data, questao)
-		alternativa_e = Alternativa(form.alternativa_e.data, questao)
-		
-		db.session.add(alternativa_a)
-		db.session.add(alternativa_b)
-		db.session.add(alternativa_c)
-		db.session.add(alternativa_d)
-		db.session.add(alternativa_e)
-		db.session.commit()
-
-		#flash('Questão cadastrada com sucesso!')
+		flash('Questão cadastrada com sucesso!')
 		return redirect( url_for('questao'))
 		
 	return render_template('/questao/novo.html', form=form)
 
-@app.route('/questao/editar/<int:id>')
+@app.route('/questao/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def questao_editar(id):
 	form = forms.QuestaoForm()
@@ -121,40 +108,16 @@ def questao_editar(id):
 	if id:
 		questao = db.session.query(Questao).filter_by(_id=id).first()
 		if questao:
-			form.init_from_Questao(questao)
+			if form.validate_on_submit():
+				questao.init_from_QuestaoForm(form)
+				db.session.commit()
+				return redirect( url_for('questao') )
+				
+			if request.method == 'GET':
+				form.init_from_Questao(questao)
+			
 			return render_template('/questao/editar.html', form=form, _id=questao._id)
 
 		flash('A questão solicitada não existe ou não está mais disponível.')
-
-	return redirect( url_for('questao') )
-
-@app.route('/questao/editar/<int:id>', methods=['POST'])
-@login_required
-def questao_salvar(id):
-	form = forms.QuestaoForm()
-
-	if id:
-		questao = db.session.query(Questao).filter_by(_id=id).first()
-		if form.validate_on_submit():
-			print(dir(questao))
-			# ajustar os valores do objeto questao
-			# ajustar os valores das alternativas
-			alternativas = db.session.query(Alternativa).filter_by(questao_id=questao._id).all()
-			alternativas[0].descricao = form.alternativa_a.data
-			alternativas[1].descricao = form.alternativa_b.data
-			alternativas[2].descricao = form.alternativa_c.data
-			alternativas[3].descricao = form.alternativa_d.data
-			alternativas[4].descricao = form.alternativa_e.data
-			db.session.update(questao)
-			db.session.update(alternativas)
-			db.session.commit()
-			return redirect( url_for('questao') )
-		else:
-			if questao:
-				form.init_from_Questao(questao)
-		
-		return redirect( url_for('questao') )
-
-		return render_template('/questao/editar.html', form=form, _id=questao._id)
 
 	return redirect( url_for('questao') )

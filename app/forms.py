@@ -23,15 +23,16 @@ class QuestaoForm(Form):
 	alternativa_d = TextField('Alternativa D', validators=[Required('O campo "Alternativa D" é obrigatório.')])
 	alternativa_e = TextField('Alternativa E', validators=[Required('O campo "Alternativa E" é obrigatório.')])
 	alternativa_correta = RadioField('Alternativa Correta', default='a', choices=[('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E')], validators=[Required('Escolha uma das opções disponibilizadas como resposta.')])
-	ativa = BooleanField('Ativa')
+	ativo = BooleanField('Ativo')
 	cadastrada_por = TextField('Cadastrada por')
 	data_cadastro = DateField('Data de Cadastro')
 
 	def init_from_Questao(self, questao):
 		self.enunciado.data = questao.enunciado
-		self.alternativa_a.data = questao.alternativas[0].descricao
-		self.alternativa_b.data = questao.alternativas[1].descricao
-		self.alternativa_c.data = questao.alternativas[2].descricao
-		self.alternativa_d.data = questao.alternativas[3].descricao
-		self.alternativa_e.data = questao.alternativas[4].descricao
+		self.alternativa_a.data = questao.alternativa_a
+		self.alternativa_b.data = questao.alternativa_b
+		self.alternativa_c.data = questao.alternativa_c
+		self.alternativa_d.data = questao.alternativa_d
+		self.alternativa_e.data = questao.alternativa_e
+		self.ativo.data = questao.ativo
 		self.alternativa_correta.data = questao.alternativa_correta

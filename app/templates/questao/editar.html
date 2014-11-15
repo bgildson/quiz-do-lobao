@@ -10,7 +10,10 @@
 	{% endfor %}
 	<tr>
 		<td>{{ form.enunciado.label }}</td>
-		<td>{{ form.enunciado }}</td>
+		<td>{{ form.enunciado }}
+			{% for error in form.enunciado.errors %}
+			<span style="color:red;">{{ error }}</span>
+			{% endfor %}</td>
 	</tr>
 	<tr>
 		<td>{{ form.alternativa_a.label }}</td>

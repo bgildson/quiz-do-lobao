@@ -2,6 +2,9 @@
 {% block conteudo %}
 <a href="{{ url_for('questao_novo') }}"> Novo </a>
 <hr />
+{% for error in get_flashed_messages() %}
+	<h3>{{error}}</h3>
+{% endfor %}
 <table>
 	<tr>
 		<td>Enunciado</td>
@@ -11,16 +14,18 @@
 		<td>Alternativa D</td>
 		<td>Alternativa E</td>
 		<td>Alternativa Correta</td>
+		<td>Castrada por</td>
 	</tr>
 	{% for questao in questoes %}
 	<tr>
 		<td><a href="/questao/editar/{{questao._id}}">{{ questao.enunciado }}</a></td>
-		<td>{{ questao.alternativas[0].descricao }}</td>
-		<td>{{ questao.alternativas[1].descricao }}</td>
-		<td>{{ questao.alternativas[2].descricao }}</td>
-		<td>{{ questao.alternativas[3].descricao }}</td>
-		<td>{{ questao.alternativas[4].descricao }}</td>
+		<td>{{ questao.alternativa_a }}</td>
+		<td>{{ questao.alternativa_b }}</td>
+		<td>{{ questao.alternativa_c }}</td>
+		<td>{{ questao.alternativa_d }}</td>
+		<td>{{ questao.alternativa_e }}</td>
 		<td>{{ questao.alternativa_correta }}</td>
+		<td>{{ questao.cadastrada_por() }}</td>
 	</tr>
 	{% endfor %}
 </table>
