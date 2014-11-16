@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from app import app
 
 # depois adicionar migrations para gerenciar as alterações no banco de dados

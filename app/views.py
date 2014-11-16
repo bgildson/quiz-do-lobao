@@ -30,9 +30,10 @@ def load_user(id):
 @app.route('/')
 @login_required
 def home():
+	'''
 	partidas = db.session.query(Partida).all()
 	for p in partidas:
-		print('%d - %d - %d' % (p._id, p.usuario_id, p.ultima_questao))
+		print('%d - %d - %d' % (p._id, p.usuario_id, p.questao_atual))
 		for r in db.session.query(PartidaResposta).filter_by(partida_id=p._id).all():
 			print('%d - %s - %d' % (r._id, r.alternativa_respondida, r.acertou))
 
@@ -40,8 +41,8 @@ def home():
 
 	if questoes:
 		for questao in questoes:
-			print('%d - %s - %s' % (questao._id, questao.enunciado, questao.alternativa_correta))
-	
+			print('%d - %s - %s' % (questao._id, questao.enunciado, questao.alternativa_selecionada))
+	'''
 	return render_template('index.html', title='Home')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -97,8 +98,6 @@ def questao():
 	questoes = db.session.query(Questao).all()
 	n = len(questoes)
 	return render_template('/questao/listar.html', questoes=questoes)
-	#dumps(questoes)
-	#return jsonify(dumps(questoes))
 
 @app.route('/questao/novo', methods=['GET', 'POST'])
 @login_required
@@ -108,7 +107,7 @@ def questao_novo():
 	if form.validate_on_submit():
 		
 		questao = Questao(form.enunciado.data, form.alternativa_a.data, form.alternativa_b.data, form.alternativa_c.data, \
-			 form.alternativa_d.data, form.alternativa_e.data, form.alternativa_correta.data, current_user)
+			 form.alternativa_d.data, form.alternativa_e.data, form.alternativa_selecionada.data, current_user)
 		db.session.add(questao)
 		db.session.commit()
 		
@@ -139,6 +138,22 @@ def questao_editar(id):
 
 	return redirect( url_for('questao') )
 
+''' depois finalizar decorator para generalizar validacao inicial das rotas
+@login_required
+def login_usuario_partida_required(func):
+	def route(*args, **kwargs):
+		usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
+
+		if usuario:
+			partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
+
+			return func(partida, *args, **kwargs)
+
+		return func(*args, **kwargs)
+
+	return route
+'''
+
 @app.route('/jogar')
 @login_required
 def jogar():
@@ -147,9 +162,9 @@ def jogar():
 	if usuario:
 		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
 
-		return render_template('jogar/jogar.html', continuar=(partida==None))
+		return render_template('jogar/jogar.html', continuar=partida)
 
-	return 'Usuário não encontrado'
+	return 'Usuário não encontrado.'
 
 @app.route('/jogar/novo')
 @login_required
@@ -157,7 +172,7 @@ def jogar_novo():
 	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
 
 	if usuario:
-		partida = db.session.query(Partida).filter_by(usuario_id=usuario_id, finalizada=False).first()
+		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
 
 		# se o usuario ja tem alguma partida em aberto
 		if partida:
@@ -184,29 +199,36 @@ def jogar_continuar():
 	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
 
 	if usuario:
-		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False)
-
+		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
+		
 		if partida:
-			# um bocado de coisa zzz agora vou dormir kkk
-			pass
-
-		else:
-			return redirect( url_for('jogar') )
+			return render_template('jogar/jogo.html')
+		
+		return redirect( url_for('jogar') )
 
 	return 'Usuário não encontrado'
 
-@app.route('/jogar/questao', methods=['GET','POST'])
+@app.route('/jogar/questao', methods=['GET', 'POST'])
 @login_required
-def jogar_questao():
+def jogar_ajusta():
 	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
 
 	if usuario:
 		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
 
 		if partida:
-			questao = get_questao(partida._id)
+			questao = db.session.query(Questao).filter_by(_id=partida.questao_atual).first()
 
 			if questao:
-				return jsonify(questao.to_dict())
+				print(questao.to_dict())
+				return jsonify(partida=partida.to_dict(), questao=questao.to_dict())
 
-	return jsonify({})
+		return redirect( url_for('jogar') )
+		
+	return 'Usuário não encontrado'
+
+@app.route('/jogar/responder', methods=['GET', 'POST'])
+@login_required
+def jogar_responder():
+	print(request.form)
+	return redirect( url_for('jogar_continuar') )

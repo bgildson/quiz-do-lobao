@@ -2,7 +2,13 @@
 <html>
 <head>
 	<meta charset="utf-8" />
-	<title>{{ title }}</title>
+	<title>
+		{% if title %}
+			{{ title }}
+		{% else %}
+			Quiz do Lobão
+		{% endif %}
+	</title>
 </head>
 <body>
 	{% block conteudo %}{% endblock %}

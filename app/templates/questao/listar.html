@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block conteudo %}
-<a href="{{ url_for('questao_novo') }}"> Novo </a>
+<a href="{{ url_for('home') }}"> Home </a> | <a href="{{ url_for('questao_novo') }}"> Novo </a>
 <hr />
 {% for error in get_flashed_messages() %}
 	<h3>{{error}}</h3>
@@ -26,7 +26,7 @@
 		<td>{{ questao.alternativa_c }}</td>
 		<td>{{ questao.alternativa_d }}</td>
 		<td>{{ questao.alternativa_e }}</td>
-		<td>{{ questao.alternativa_correta }}</td>
+		<td>{{ questao.alternativa_selecionada }}</td>
 		<td>{{ questao.cadastrada_por() }}</td>
 	</tr>
 	{% endfor %}
