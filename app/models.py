@@ -19,6 +19,10 @@ class Usuario(db.Model):
 		self.senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
 		self.data_cadastro = datetime.now()
 
+	def to_dict(self):
+		return {'id': self._id, \
+				'usuario': self.usuario}
+
 	def is_authenticated(self):
 		return True
 
@@ -44,6 +48,7 @@ class Questao(db.Model):
 	ativo = db.Column(db.Boolean)
 	alternativa_correta = db.Column(db.String(1))
 	cadastrada_por_id = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
+	partidas = relationship('Partida')
 
 	def __init__(self, enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, alternativa_correta, usuario):
 		self.enunciado = enunciado
@@ -56,6 +61,18 @@ class Questao(db.Model):
 		self.alternativa_correta = alternativa_correta.lower()
 		self.cadastrada_por_id = usuario._id
 
+	# nem todos os campos devem ser colocados na criacao do dicionario
+	def to_dict(self):
+		return {'id': self._id, \
+				'enunciado': self.enunciado, \
+				'alternativa_a': self.alternativa_a, \
+				'alternativa_b': self.alternativa_b, \
+				'alternativa_c': self.alternativa_c, \
+				'alternativa_d': self.alternativa_d, \
+				'alternativa_e': self.alternativa_e, \
+				'cadastrada_por': self.cadastrada_por()
+				}
+
 	def init_from_QuestaoForm(self, form):
 		self.enunciado = form.enunciado.data
 		self.alternativa_a = form.alternativa_a.data
@@ -67,7 +84,39 @@ class Questao(db.Model):
 		self.alternativa_correta = form.alternativa_correta.data.lower()
 
 	def cadastrada_por(self):
-		usuario = db.session.query(Usuario).filter_by(_id=self.cadastrada_por_id).first()
-		if usuario:
-			return usuario.usuario
-		return ''
+		return db.session.query(Usuario).filter_by(_id=self.cadastrada_por_id).first().usuario or ''
+
+class Partida(db.Model):
+	__tablename__ = 'partidas'
+
+	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	usuario_id = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
+	ultima_questao = db.Column(db.Integer, ForeignKey('cad_questoes._id'), nullable=False)
+	cartas = db.Column(db.Integer)
+	pulos = db.Column(db.Integer)
+	finalizada = db.Column(db.Boolean)
+	respostas = relationship('PartidaResposta')
+
+	def __init__(self, usuario_id, questao_id):
+		self.usuario_id = usuario_id
+		self.ultima_questao = questao_id
+		self.cartas = 1
+		self.pulos = 1
+		self.finalizada = False
+
+class PartidaResposta(db.Model):
+	__tablename__ = 'partidas_resposta'
+
+	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	usuario_id = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
+	questao_id = db.Column(db.Integer, ForeignKey('cad_questoes._id'), nullable=False)
+	partida_id = db.Column(db.Integer, ForeignKey('partidas._id'), nullable=False)
+	alternativa_respondida = db.Column(db.String(1))
+	acertou = db.Column(db.Boolean)
+
+	def __init__(self, usuario_id, questao_id, partida_id, alternativa_respondida, acertou):
+		self.usuario_id = usuario_id
+		self.questao_id = questao_id
+		self.partida_id = partida_id
+		self.alternativa_respondida = alternativa_respondida
+		self.acertou = acertou
