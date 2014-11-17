@@ -110,7 +110,7 @@ def questao_novo():
 	if form.validate_on_submit():
 		
 		questao = Questao(form.enunciado.data, form.alternativa_a.data, form.alternativa_b.data, form.alternativa_c.data, \
-			 form.alternativa_d.data, form.alternativa_e.data, form.alternativa_selecionada.data, current_user)
+			 form.alternativa_d.data, form.alternativa_e.data, form.alternativa_correta.data, current_user)
 		db.session.add(questao)
 		db.session.commit()
 		

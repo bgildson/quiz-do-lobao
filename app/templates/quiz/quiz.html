@@ -6,6 +6,10 @@
 	function ajusta_rodada(){
 		$.post("{{ url_for('quiz_rodada') }}")
 			.done(function(data){
+				$("#rodada").text("RODADA " + data.partida['rodada']);
+				$("#cartas").text("Cartas (" + data.partida['cartas'] + ")");
+				$("#pulos").text("Pulos (" + data.partida['pular'] + ")");
+
 				$("#enunciado").text(data.questao['enunciado']);
 				$("#alternativa_a").text(data.questao['alternativa_a']);
 				$("#alternativa_b").text(data.questao['alternativa_b']);
@@ -45,10 +49,10 @@
 {% block conteudo %}
 
 <div id="questao-menu">
-	<p>RODADA X</p>
+	<p id="rodada">RODADA X</p>
 	<ul class="list-left">
-		<li><a href="#">Cartas (X)</a></li>
-		<li><a href="#">Pular (X)</a></li>
+		<li><a href="#" id="cartas">Cartas (X)</a></li>
+		<li><a href="#" id="pulos">Pular (X)</a></li>
 	</ul>
 </div>
 <ul id="questao">

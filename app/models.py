@@ -82,7 +82,7 @@ class Questao(db.Model):
 		self.alternativa_d = form.alternativa_d.data
 		self.alternativa_e = form.alternativa_e.data
 		self.ativo = form.ativo.data
-		self.alternativa_correta = form.alternativa_selecionada.data.lower()
+		self.alternativa_correta = form.alternativa_correta.data.lower()
 
 	def cadastrada_por(self):
 		return db.session.query(Usuario).filter_by(_id=self.cadastrada_por_id).first().usuario or ''
@@ -95,7 +95,7 @@ class Partida(db.Model):
 	questao_atual = db.Column(db.Integer, ForeignKey('cad_questoes._id'), nullable=False)
 	rodada = db.Column(db.Integer)
 	cartas = db.Column(db.Integer)
-	pulos = db.Column(db.Integer)
+	pular = db.Column(db.Integer)
 	finalizada = db.Column(db.Boolean)
 	respostas = relationship('PartidaResposta')
 
@@ -104,13 +104,13 @@ class Partida(db.Model):
 		self.questao_atual = questao_id
 		self.rodada = 1
 		self.cartas = 1
-		self.pulos = 1
+		self.pular = 1
 		self.finalizada = False
 
 	def to_dict(self):
 		return {'rodada': self.rodada,
 				'cartas': self.cartas,
-				'pulos': self.pulos,
+				'pular': self.pular,
 				'finalizada': self.finalizada}
 
 class PartidaResposta(db.Model):
