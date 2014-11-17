@@ -4,8 +4,8 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
-	function ajusta(){
-		$.post("{{ url_for('jogar_ajusta') }}")
+	function ajusta_rodada(){
+		$.post("{{ url_for('quiz_rodada') }}")
 			.done(function(data){
 				$("#enunciado").text(data.questao['enunciado']);
 				$("#alternativa_a").text(data.questao['alternativa_a']);
@@ -15,28 +15,40 @@
 				$("#alternativa_e").text(data.questao['alternativa_e']);
 			})
 			.fail(function(fail){
-				alert('faiou');
+				alert('error');
 			});
 	}
 	function envia_resposta(){
-		$.post("{{ url_for('jogar_responder') }}", {resposta: $("input[name=alternativa]").val(),})
+		var resposta = $('input:radio[name=alternativa]:checked').val();
+		$.post("{{ url_for('quiz_responder') }}", {'resposta': resposta,})
 			.done(function(data){
-				alert($("input[name=alternativa]").val());
-				
+				var acertou = data['acertou'];
+				if(acertou){
+					ajusta_rodada();
+				}else{
+					window.location.replace("{{ url_for('quiz_resultado') }}");
+				}
 			})
 			.fail(function(fail){
-				alert('faiou');
+				alert('error');
 			});
 	}
 	$(document).ready(function(){
-		ajusta();
+		ajusta_rodada();
+
+		$("#responder").bind('click', function(){
+			envia_resposta();
+		});
 	});
+	/*
 	$('#responder').bind('click', function(){
-		alert($("input[name=alternativa]").val());
+		alert(1);
+		//alert($("input:radio[name=alternativa]").val());
 		//envia_resposta();
-		//ajusta();
-		$("#alternativa_a").checked="checked"
+		//ajusta_rodada();
+		//$("#alternativa_a").checked("checked");
 	});
+	*/
 </script>
 
 <h3 id="enunciado"></h3>

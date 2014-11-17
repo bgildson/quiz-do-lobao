@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+	
+	<a href=" {{ url_for('quiz_novo') }} "> Iniciar </a>
+	
+	{% if continuar %}
+		<a href=" {{ url_for('quiz_continuar') }} "> Continuar </a>
+	{% endif %}
+
+{% endblock %}

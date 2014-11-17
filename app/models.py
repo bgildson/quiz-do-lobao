@@ -51,7 +51,7 @@ class Questao(db.Model):
 	cadastrada_por_id = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
 	partidas = relationship('Partida')
 
-	def __init__(self, enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, alternativa_selecionada, usuario):
+	def __init__(self, enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, alternativa_correta, usuario):
 		self.enunciado = enunciado
 		self.alternativa_a = alternativa_a
 		self.alternativa_b = alternativa_b
@@ -59,7 +59,7 @@ class Questao(db.Model):
 		self.alternativa_d = alternativa_d
 		self.alternativa_e = alternativa_e
 		self.ativo = False
-		self.alternativa_selecionada = alternativa_selecionada.lower()
+		self.alternativa_correta = alternativa_correta.lower()
 		self.cadastrada_por_id = usuario._id
 
 	# nem todos os campos devem ser colocados na criacao do dicionario
@@ -82,7 +82,7 @@ class Questao(db.Model):
 		self.alternativa_d = form.alternativa_d.data
 		self.alternativa_e = form.alternativa_e.data
 		self.ativo = form.ativo.data
-		self.alternativa_selecionada = form.alternativa_selecionada.data.lower()
+		self.alternativa_correta = form.alternativa_selecionada.data.lower()
 
 	def cadastrada_por(self):
 		return db.session.query(Usuario).filter_by(_id=self.cadastrada_por_id).first().usuario or ''

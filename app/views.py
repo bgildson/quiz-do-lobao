@@ -23,6 +23,9 @@ def get_questao(partida_id_atual=0):
 		.first()
 	return questao
 
+def resposta_is_valid(resposta):
+	return resposta in ['a', 'b', 'c', 'd', 'e']
+
 @lm.user_loader
 def load_user(id):
 	return db.session.query(Usuario).filter_by(_id=id).first()
@@ -154,21 +157,21 @@ def login_usuario_partida_required(func):
 	return route
 '''
 
-@app.route('/jogar')
+@app.route('/quiz/inicio')
 @login_required
-def jogar():
+def quiz_inicio():
 	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
 
 	if usuario:
 		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
 
-		return render_template('jogar/jogar.html', continuar=partida)
+		return render_template('quiz/inicio.html', continuar=partida)
 
 	return 'Usuário não encontrado.'
 
-@app.route('/jogar/novo')
+@app.route('/quiz/novo')
 @login_required
-def jogar_novo():
+def quiz_novo():
 	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
 
 	if usuario:
@@ -187,30 +190,30 @@ def jogar_novo():
 			db.session.add(partida)
 			db.session.commit()
 
-			return redirect( url_for('jogar_continuar') )
+			return redirect( url_for('quiz') )
 
 		return 'Não foram encontradas questões para responder.'
 
 	return 'Usuário não encontrado'
 
-@app.route('/jogo')
+@app.route('/quiz')
 @login_required
-def jogar_continuar():
+def quiz():
 	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
 
 	if usuario:
 		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
 		
 		if partida:
-			return render_template('jogar/jogo.html')
+			return render_template('quiz/quiz.html')
 		
-		return redirect( url_for('jogar') )
+		return redirect( url_for('quiz_inicio') )
 
 	return 'Usuário não encontrado'
 
-@app.route('/jogar/questao', methods=['GET', 'POST'])
+@app.route('/quiz/rodada', methods=['POST'])
 @login_required
-def jogar_ajusta():
+def quiz_rodada():
 	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
 
 	if usuario:
@@ -220,15 +223,65 @@ def jogar_ajusta():
 			questao = db.session.query(Questao).filter_by(_id=partida.questao_atual).first()
 
 			if questao:
-				print(questao.to_dict())
 				return jsonify(partida=partida.to_dict(), questao=questao.to_dict())
 
-		return redirect( url_for('jogar') )
+		return redirect( url_for('quiz_inicio') )
 		
 	return 'Usuário não encontrado'
 
-@app.route('/jogar/responder', methods=['GET', 'POST'])
+@app.route('/quiz/responder', methods=['GET', 'POST'])
 @login_required
-def jogar_responder():
-	print(request.form)
-	return redirect( url_for('jogar_continuar') )
+def quiz_responder():
+	resposta = request.form['resposta']
+
+	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
+
+	if usuario and resposta_is_valid(resposta):
+		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
+
+		if partida:
+			questao_respondida = db.session.query(Questao).filter_by(_id=partida.questao_atual).first()
+
+			acertou = questao_respondida.alternativa_correta == resposta
+
+			partidas_resposta = PartidaResposta(usuario._id, questao_respondida._id, partida._id, resposta, acertou)
+			db.session.add(partidas_resposta)
+			db.session.commit()
+
+			if acertou:
+				partida.rodada = partida.rodada + 1
+				partida.questao_atual = get_questao(partida._id)._id
+			else:
+				partida.finalizada = True
+
+			db.session.commit()
+
+			return jsonify({'acertou': acertou})
+
+		return 'Partida não encontrada'
+
+	return 'Usuário não encontrado'
+
+
+
+
+
+
+#ajustar ta tpda errada ainda
+def get_quiz_resultado():
+	usr = aliased(Usuario)
+	partidas = db.session.query(Partida) \
+				.outerjoin((Partida, usr)) \
+				.order_by('rodada').filter()
+	return partidas
+
+@app.route('/quiz/resultado', methods=['GET', 'POST'])
+@login_required
+def quiz_resultado():
+	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
+	posicao_ranking = 1 #get_quiz_resultado()
+	if usuario:
+		resultado = {'usuario': usuario.usuario, 'posicao_ranking': posicao_ranking,}
+		return render_template('/quiz/resultado.html', resultado=resultado)
+
+	return 'Usuário não encontrado'
