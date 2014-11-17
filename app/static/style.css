@@ -1,0 +1,108 @@
+* {
+	margin: 0;
+	padding: 0;
+	/*font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;*/
+	font-family: Monaco,Andale Mono,Courier New,monospace;
+}
+body {
+	background: #F3F3F4;
+}
+.no-list li {
+	list-style: none;
+}
+.list-left > li {
+	float: left;
+}
+#top {
+	width: 100%;
+	height: 50px;
+	background: #263A4A;
+	position: fixed;
+	top: 0;
+}
+#top h2 {
+	color: #D1DADE;
+	line-height: 50px;
+	text-align: center;
+}
+#bot {
+	width: 100%;
+	height: 30px;
+	background: #263A4A;
+	position: fixed;
+	bottom: 0;
+	box-shadow: 0px -5px 10px #888888;
+}
+#bot h4 {
+	color: #D1DADE;
+	line-height: 30px;
+}
+#conteudo {
+	margin: 0 auto;
+	margin-top: 50px;
+	width: 1000px;
+	height: 800px;
+	background: #FFFFFF;
+}
+#menu {
+	float: left;
+	display: table;
+	background: #2F4050;
+}
+#menu ul li a {
+	padding: 10px 30px;
+	display: table;
+	width: 240px;
+	text-decoration: none;
+	color: #D1DADE;
+}
+#menu ul li:first-child {
+	font-size: 20px;
+	font-weight: bold;
+}
+#menu ul li a:hover {
+	background: #17987E;
+	color: #FFF;
+}
+#usuario-conteudo {
+	width: 700px;
+}
+#questao-menu {
+	background: #263A4A;
+	height: 50px;
+	color: #D1DADE;
+}
+#questao-menu p {
+	display: inline;
+	line-height: 50px;
+	padding-left: 20px;
+	font-size: 20px;
+}
+#questao-menu ul {
+	float: right;
+}
+#questao-menu ul li a {
+	padding: 0 20px;
+	display: table;
+	line-height: 50px;
+	text-decoration: none;
+	color: #D1DADE;
+}
+#questao-menu ul li a:hover {
+	background: #17987E;
+	color: #FFF;
+}
+#enunciado {
+	padding: 50px;
+	font-size: 22px;
+}
+#alternativas {
+	padding: 0 70px 20px 70px;
+}
+#alternativas ul li {
+	padding-bottom: 20px;
+}
+#alternativas #responder {
+	margin: 0 auto;
+	display: block;
+}

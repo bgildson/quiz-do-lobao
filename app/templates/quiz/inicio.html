@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'logado.html' %}
 
 {% block conteudo %}
 	
 	<a href=" {{ url_for('quiz_novo') }} "> Iniciar </a>
 	
 	{% if continuar %}
-		<a href=" {{ url_for('quiz_continuar') }} "> Continuar </a>
+		<a href=" {{ url_for('quiz') }} "> Continuar </a>
 	{% endif %}
 
 {% endblock %}

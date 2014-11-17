@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'logado.html' %}
 {% block conteudo %}
-<a href="{{ url_for('home') }}"> Home </a> | <a href="{{ url_for('questao_novo') }}"> Novo </a>
+<a href="{{ url_for('questao_novo') }}"> Novo </a>
 <hr />
 {% for error in get_flashed_messages() %}
 	<h3>{{error}}</h3>

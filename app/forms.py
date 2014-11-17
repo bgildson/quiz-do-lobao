@@ -22,7 +22,7 @@ class QuestaoForm(Form):
 	alternativa_c = TextField('Alternativa C', validators=[Required('O campo "Alternativa C" é obrigatório.')])
 	alternativa_d = TextField('Alternativa D', validators=[Required('O campo "Alternativa D" é obrigatório.')])
 	alternativa_e = TextField('Alternativa E', validators=[Required('O campo "Alternativa E" é obrigatório.')])
-	alternativa_selecionada = RadioField('Alternativa Selecionada', default='a', choices=[('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E')], validators=[Required('Escolha uma das opções disponibilizadas como resposta.')])
+	alternativa_correta = RadioField('Alternativa Selecionada', default='a', choices=[('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E')], validators=[Required('Escolha uma das opções disponibilizadas como resposta.')])
 	ativo = BooleanField('Ativo')
 	cadastrada_por = TextField('Cadastrada por')
 	data_cadastro = DateField('Data de Cadastro')
@@ -35,7 +35,7 @@ class QuestaoForm(Form):
 		self.alternativa_d.data = questao.alternativa_d
 		self.alternativa_e.data = questao.alternativa_e
 		self.ativo.data = questao.ativo
-		self.alternativa_selecionada.data = questao.alternativa_selecionada
+		self.alternativa_correta.data = questao.alternativa_correta
 
 class QuestaoRespostaForm(Form):
 	pass

@@ -1,7 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'logado.html' %}
 
-{% block conteudo%}
-
+{% block head %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
 	function ajusta_rodada(){
@@ -40,29 +39,37 @@
 			envia_resposta();
 		});
 	});
-	/*
-	$('#responder').bind('click', function(){
-		alert(1);
-		//alert($("input:radio[name=alternativa]").val());
-		//envia_resposta();
-		//ajusta_rodada();
-		//$("#alternativa_a").checked("checked");
-	});
-	*/
 </script>
+{% endblock %}
 
-<h3 id="enunciado"></h3>
-<ul>
-	<li><input type="radio" name="alternativa" value="a"/>
-		<label id="alternativa_a" for="alternativa_a"></label></li>
-	<li><input type="radio" name="alternativa" value="b"/>
-		<label id="alternativa_b" for="alternativa_b"></label></li>
-	<li><input type="radio" name="alternativa" value="c"/>
-		<label id="alternativa_c" for="alternativa_c"></label></li>
-	<li><input type="radio" name="alternativa" value="d"/>
-		<label id="alternativa_d" for="alternativa_d"></label></li>
-	<li><input type="radio" name="alternativa" value="e"/>
-		<label id="alternativa_e" for="alternativa_e"></label></li>
-	<li><input type="button" id="responder" value="Responder" /></li>
+{% block conteudo %}
+
+<div id="questao-menu">
+	<p>RODADA X</p>
+	<ul class="list-left">
+		<li><a href="#">Cartas (X)</a></li>
+		<li><a href="#">Pular (X)</a></li>
+	</ul>
+</div>
+<ul id="questao">
+	<li>
+		<p id="enunciado"></p>
+	</li>
+	<li id="alternativas">
+		<ul>
+			<li><input type="radio" name="alternativa" value="a"/>
+				<label id="alternativa_a" for="alternativa_a"></label></li>
+			<li><input type="radio" name="alternativa" value="b"/>
+				<label id="alternativa_b" for="alternativa_b"></label></li>
+			<li><input type="radio" name="alternativa" value="c"/>
+				<label id="alternativa_c" for="alternativa_c"></label></li>
+			<li><input type="radio" name="alternativa" value="d"/>
+				<label id="alternativa_d" for="alternativa_d"></label></li>
+			<li><input type="radio" name="alternativa" value="e"/>
+				<label id="alternativa_e" for="alternativa_e"></label></li>
+			<li><input type="button" id="responder" value="Responder" /></li>
+		</ul>
+	</li>
 </ul>
+
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'logado.html' %}
 {% block conteudo %}
 <form action="/questao/editar/{{ _id }}" method="POST">
 <table>
@@ -51,9 +51,9 @@
 			{% endfor %}</td>
 	</tr>
 	<tr>
-		<td>{{ form.alternativa_selecionada.label }}</td>
-		<td>{{ form.alternativa_selecionada }}
-			{% for error in form.alternativa_selecionada.errors %}
+		<td>{{ form.alternativa_correta.label }}</td>
+		<td>{{ form.alternativa_correta }}
+			{% for error in form.alternativa_correta.errors %}
 			<span style="color:red;">{{ error }}</span>
 			{% endfor %}</td>
 	</tr>
