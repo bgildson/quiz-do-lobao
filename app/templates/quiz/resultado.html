@@ -1,7 +1,9 @@
-{% extends 'logado.html' %}
+{% extends 'quiz/base.html' %}
 
-{% block conteudo %}
+{% block quiz %}
+
 <h2>O jogo acabou.</h2>
 <p>Parabéns {{ resultado.usuario }} você ficou em {{ resultado.posicao_ranking }}º lugar no ranking do quiz.</p>
 <a href="{{ url_for('quiz_novo') }}"> Jogar Novamente </a>
+
 {% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'logado.html' %}
+
+{% block head %}{% endblock %}
+
+{% block conteudo %}
+
+	<ul class="panel">
+		<li class="panel-head">
+			<p>Questão</p>
+		</li>
+		<li class="panel-body">
+			{% block questao %}{% endblock %}
+		<li>
+	</ul>
+
+{% endblock %}

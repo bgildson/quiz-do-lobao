@@ -1,34 +1,25 @@
-{% extends 'logado.html' %}
-{% block conteudo %}
-<a href="{{ url_for('questao_novo') }}"> Novo </a>
-<hr />
+{% extends 'questao/base.html' %}
+
+{% block questao %}
+
+<a href="{{ url_for('questao_novo') }}" class="btn"> Novo </a>
+
 {% for error in get_flashed_messages() %}
 	<h3>{{error}}</h3>
 {% endfor %}
-<table>
+<table class="lista-questoes tabela">
 	<tr>
-		<td>ID</td>
-		<td>Enunciado</td>
-		<td>Alternativa A</td>
-		<td>Alternativa B</td>
-		<td>Alternativa C</td>
-		<td>Alternativa D</td>
-		<td>Alternativa E</td>
-		<td>Alternativa Correta</td>
-		<td>Castrada por</td>
+		<th class="l-q-enunciado">Enunciado</th>
+		<th class="l-q-alternativa-correta">Alternativa Correta</th>
+		<th class="l-q-cadastrada-por">Cadastrada por</th>
 	</tr>
 	{% for questao in questoes %}
 	<tr>
-		<td>{{ questao._id }} </td>
 		<td><a href="/questao/editar/{{questao._id}}">{{ questao.enunciado }}</a></td>
-		<td>{{ questao.alternativa_a }}</td>
-		<td>{{ questao.alternativa_b }}</td>
-		<td>{{ questao.alternativa_c }}</td>
-		<td>{{ questao.alternativa_d }}</td>
-		<td>{{ questao.alternativa_e }}</td>
-		<td>{{ questao.alternativa_selecionada }}</td>
+		<td>{{ questao.alternativa_correta }}</td>
 		<td>{{ questao.cadastrada_por() }}</td>
 	</tr>
 	{% endfor %}
 </table>
+
 {% endblock %}

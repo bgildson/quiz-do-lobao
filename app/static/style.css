@@ -13,6 +13,57 @@ body {
 .list-left > li {
 	float: left;
 }
+.panel {
+	display: block;
+	box-shadow: 2px 5px 5px #888888;
+	margin-bottom: 20px;
+}
+.panel-head {
+	height: 50px;
+	background: #263A4A;
+	padding: 0 30px;
+}
+.panel-head p {
+	line-height: 50px;
+	text-transform: uppercase;
+	font-size: 20px;
+	font-weight: bold;
+	color: #D1DADE;
+}
+.panel-body {
+	padding: 20px;
+	background: #FFF;
+}
+.btn {
+	display: table;
+	background: #263A4A;
+	padding: 10px 30px;
+	color: #D1DADE;
+	border: 0;
+	text-decoration: none;
+}
+.btn:hover {
+	background: #17987E;
+	color: #FFF;
+}
+.tabela {
+	display: table;
+	margin-top: 10px;
+	border-spacing: 0;
+}
+.tabela td, .tabela th {
+	padding: 10px 20px;
+}
+.tabela tr th {
+	background: #263A4A;
+	color: #FFF;
+}
+.tabela, .tabela td {
+	border: solid 1px #263A4A;
+}
+.l-q-enunciado {
+	width: 500px;
+}
 #top {
 	width: 100%;
 	height: 50px;
@@ -24,6 +75,7 @@ body {
 	color: #D1DADE;
 	line-height: 50px;
 	text-align: center;
+	box-shadow: 0px 0px 10px #888888;
 }
 #bot {
 	width: 100%;
@@ -31,7 +83,7 @@ body {
 	background: #263A4A;
 	position: fixed;
 	bottom: 0;
-	box-shadow: 0px -5px 10px #888888;
+	/*box-shadow: 0px -5px 10px #888888;*/
 }
 #bot h4 {
 	color: #D1DADE;
@@ -39,15 +91,17 @@ body {
 }
 #conteudo {
 	margin: 0 auto;
-	margin-top: 50px;
+	margin-top: 60px;
+	margin-bottom: 40px;
 	width: 1000px;
 	height: 800px;
-	background: #FFFFFF;
 }
 #menu {
+	margin-right: 20px;
 	float: left;
 	display: table;
 	background: #263A4A;
+	box-shadow: 2px 5px 5px #888888;
 }
 #menu ul li a {
 	padding: 10px 30px;
@@ -57,6 +111,7 @@ body {
 	color: #D1DADE;
 }
 #menu ul li:first-child {
+	text-transform: uppercase;
 	font-size: 20px;
 	font-weight: bold;
 }
@@ -65,7 +120,7 @@ body {
 	color: #FFF;
 }
 #usuario-conteudo {
-	width: 700px;
+	width: 680px;
 }
 #questao-menu {
 	background: #263A4A;
@@ -92,9 +147,9 @@ body {
 	background: #17987E;
 	color: #FFF;
 }
-#enunciado {
-	padding: 50px;
-	font-size: 22px;
+#questao-enunciado {
+	padding: 20px;
+	font-size: 20px;
 }
 #alternativas {
 	padding: 0 70px 20px 70px;
@@ -104,5 +159,4 @@ body {
 }
 #alternativas #responder {
 	margin: 0 auto;
-	display: block;
 }

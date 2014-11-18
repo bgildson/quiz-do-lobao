@@ -1,4 +1,4 @@
-{% extends 'logado.html' %}
+{% extends 'quiz/base.html' %}
 
 {% block head %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -10,12 +10,13 @@
 				$("#cartas").text("Cartas (" + data.partida['cartas'] + ")");
 				$("#pulos").text("Pulos (" + data.partida['pular'] + ")");
 
-				$("#enunciado").text(data.questao['enunciado']);
+				$("#questao-enunciado").text(data.questao['enunciado']);
 				$("#alternativa_a").text(data.questao['alternativa_a']);
 				$("#alternativa_b").text(data.questao['alternativa_b']);
 				$("#alternativa_c").text(data.questao['alternativa_c']);
 				$("#alternativa_d").text(data.questao['alternativa_d']);
 				$("#alternativa_e").text(data.questao['alternativa_e']);
+				$("input:radio[name=alternativa][value=a]").prop('checked', true);
 			})
 			.fail(function(fail){
 				alert('error');
@@ -46,7 +47,7 @@
 </script>
 {% endblock %}
 
-{% block conteudo %}
+{% block quiz %}
 
 <div id="questao-menu">
 	<p id="rodada">RODADA X</p>
@@ -55,13 +56,14 @@
 		<li><a href="#" id="pulos">Pular (X)</a></li>
 	</ul>
 </div>
+
 <ul id="questao">
 	<li>
-		<p id="enunciado"></p>
+		<p id="questao-enunciado"></p>
 	</li>
 	<li id="alternativas">
 		<ul>
-			<li><input type="radio" name="alternativa" value="a"/>
+			<li><input checked type="radio" id="alternativa_aa" name="alternativa" value="a"/>
 				<label id="alternativa_a" for="alternativa_a"></label></li>
 			<li><input type="radio" name="alternativa" value="b"/>
 				<label id="alternativa_b" for="alternativa_b"></label></li>
@@ -71,7 +73,8 @@
 				<label id="alternativa_d" for="alternativa_d"></label></li>
 			<li><input type="radio" name="alternativa" value="e"/>
 				<label id="alternativa_e" for="alternativa_e"></label></li>
-			<li><input type="button" id="responder" value="Responder" /></li>
+			<li><a href="#" id="responder" class="btn">Responder</a></li>
+			<!--<li><input type="button" id="responder" value="Responder" /></li>-->
 		</ul>
 	</li>
 </ul>
