@@ -2,11 +2,12 @@
 
 {% block questao %}
 
-<a href="{{ url_for('questao_novo') }}" class="btn"> Novo </a>
-
-{% for error in get_flashed_messages() %}
-	<h3>{{error}}</h3>
+{% for message in get_flashed_messages() %}
+	<h3 class="center ele-space">{{message}}</h3>
 {% endfor %}
+
+<a href="{{ url_for('questao_novo') }}" class="btn center"> Novo </a>
+
 <table class="lista-questoes tabela">
 	<tr>
 		<th class="l-q-enunciado">Enunciado</th>

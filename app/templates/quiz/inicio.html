@@ -2,10 +2,11 @@
 
 {% block quiz %}
 
-<a href=" {{ url_for('quiz_novo') }} " class="btn"> Iniciar </a>
-
-{% if continuar %}
-	<a href=" {{ url_for('quiz') }} " class="btn"> Continuar </a>
-{% endif %}
+<ul class="list-left ele-space center">
+	<li><a href=" {{ url_for('quiz_novo') }} " class="btn"> Iniciar </a></li>
+	{% if continuar %}
+	<li><a href=" {{ url_for('quiz') }} " class="btn"> Continuar </a></li>
+	{% endif %}
+</ul>
 
 {% endblock %}

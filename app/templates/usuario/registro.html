@@ -1,45 +1,58 @@
 {% extends 'base.html' %}
 {% block logado %}
-<form action=" {{ url_for('registro') }} " method="POST">
-<table>
-	{{ form.hidden_tag() }}
-	{% for error in get_flashed_messages(category_filter=['registro']) %}
-	<tr>
-		<td colspan="2">{{ error }}</td>
-	</tr>
-	{% endfor %}
-	<tr>
-		<td>{{ form.usuario.label }}</td>
-		<td>{{ form.usuario }}
-			{% for error in form.usuario.errors %}
-			<span style="color:red"> [{{ error }}] </span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td>{{ form.email.label }}</td>
-		<td>{{ form.email }}
-			{% for error in form.email.errors %}
-			<span style="color:red"> [{{ error }}] </span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td>{{ form.senha.label }}</td>
-		<td>{{ form.senha }}
-			{% for error in form.senha.errors %}
-			<span style="color:red"> [{{ error }}] </span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td>{{ form.confirma_senha.label }}</td>
-		<td>{{ form.confirma_senha }}
-			{% for error in form.confirma_senha.errors %}
-			<span style="color:red"> [{{ error }}] </span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td><input type="submit" value="Cadastrar" /></td>
-	</tr>
-</table>
-</form>
-<a href="{{ url_for('login') }}">Fazer Login</a>
+
+<ul class="panel table center">
+	<li class="panel-head">
+		<p>Login</p>
+	</li>
+	<li class="panel-body">
+
+		<form action=" {{ url_for('registro') }} " method="POST">
+		<table class="ele-space">
+			{{ form.hidden_tag() }}
+			{% for error in get_flashed_messages(category_filter=['registro']) %}
+			<tr>
+				<td colspan="2">{{ error }}</td>
+			</tr>
+			{% endfor %}
+			<tr>
+				<td>{{ form.usuario.label }}</td>
+				<td>{{ form.usuario }}
+					{% for error in form.usuario.errors %}
+					<span style="color:red"> [{{ error }}] </span>
+					{% endfor %}</td>
+			</tr>
+			<tr>
+				<td>{{ form.email.label }}</td>
+				<td>{{ form.email }}
+					{% for error in form.email.errors %}
+					<span style="color:red"> [{{ error }}] </span>
+					{% endfor %}</td>
+			</tr>
+			<tr>
+				<td>{{ form.senha.label }}</td>
+				<td>{{ form.senha }}
+					{% for error in form.senha.errors %}
+					<span style="color:red"> [{{ error }}] </span>
+					{% endfor %}</td>
+			</tr>
+			<tr>
+				<td>{{ form.confirma_senha.label }}</td>
+				<td>{{ form.confirma_senha }}
+					{% for error in form.confirma_senha.errors %}
+					<span style="color:red"> [{{ error }}] </span>
+					{% endfor %}</td>
+			</tr>
+			<tr>
+				<td colspan="2"><input type="submit" value="Cadastrar" class="btn center" /></td>
+			</tr>
+			<tr>
+				<td colspan="2"><a href="{{ url_for('login') }}" class="center a">Fazer Login</a></td>
+			</tr>
+		</table>
+		</form>
+
+	</li>
+</ul>
+
 {% endblock %}

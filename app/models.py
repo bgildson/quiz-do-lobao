@@ -2,6 +2,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from app import db
+from app.enums import StatusQuestao, RetornoResposta
 import hashlib
 from datetime import datetime
 
@@ -46,21 +47,23 @@ class Questao(db.Model):
 	alternativa_c = db.Column(db.String)
 	alternativa_d = db.Column(db.String)
 	alternativa_e = db.Column(db.String)
-	ativo = db.Column(db.Boolean)
+	status = db.Column(db.Integer)
 	alternativa_correta = db.Column(db.String(1))
-	cadastrada_por_id = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
+	enviada_por = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
+	revisada_por = db.Column(db.Integer, ForeignKey('usuarios._id'))
+	observacoes = db.Column(db.String(100))
 	partidas = relationship('Partida')
 
-	def __init__(self, enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, alternativa_correta, usuario):
+	def __init__(self, enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, alternativa_correta, usuario_id):
 		self.enunciado = enunciado
 		self.alternativa_a = alternativa_a
 		self.alternativa_b = alternativa_b
 		self.alternativa_c = alternativa_c
 		self.alternativa_d = alternativa_d
 		self.alternativa_e = alternativa_e
-		self.ativo = False
+		self.status = False
 		self.alternativa_correta = alternativa_correta.lower()
-		self.cadastrada_por_id = usuario._id
+		self.enviada_por = usuario_id
 
 	# nem todos os campos devem ser colocados na criacao do dicionario
 	def to_dict(self):
@@ -71,8 +74,8 @@ class Questao(db.Model):
 				'alternativa_c': self.alternativa_c,
 				'alternativa_d': self.alternativa_d,
 				'alternativa_e': self.alternativa_e,
-				'cadastrada_por': self.cadastrada_por()
-				}
+				'enviada_por': self.enviada_por_usuario(),
+				'revisada_por': self.revisada_por}
 
 	def init_from_QuestaoForm(self, form):
 		self.enunciado = form.enunciado.data
@@ -81,11 +84,15 @@ class Questao(db.Model):
 		self.alternativa_c = form.alternativa_c.data
 		self.alternativa_d = form.alternativa_d.data
 		self.alternativa_e = form.alternativa_e.data
-		self.ativo = form.ativo.data
+		self.status = form.status.data
 		self.alternativa_correta = form.alternativa_correta.data.lower()
 
-	def cadastrada_por(self):
-		return db.session.query(Usuario).filter_by(_id=self.cadastrada_por_id).first().usuario or ''
+	def revisar(self, form):
+		self.revisada_por = form.revisada_por.data
+		self.observacoes = form.observacoes.data
+
+	def enviada_por_usuario(self):
+		return db.session.query(Usuario).filter_by(_id=self.enviada_por).first().usuario or ''
 
 class Partida(db.Model):
 	__tablename__ = 'partidas'

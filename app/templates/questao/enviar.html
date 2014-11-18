@@ -1,6 +1,6 @@
 {% extends 'questao/base.html' %}
 {% block questao %}
-<form action="{{ url_for('questao_novo') }}" method="POST">
+<form action="{{ url_for('questao_enviar') }}" method="POST">
 <table>
 	{{ form.hidden_tag() }}
 	{% for message in get_flashed_messages() %}
@@ -61,7 +61,7 @@
 			{% endfor %}</td>
 	</tr>
 	<tr>
-		<td colspan="2"><input type="submit" class="btn" value="Cadastrar" /></td>
+		<td colspan="2"><input type="submit" class="btn center" value="Enviar" /></td>
 	</tr>
 </table>
 </form>

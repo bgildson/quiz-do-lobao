@@ -1,31 +1,45 @@
 {% extends 'base.html' %}
+
 {% block logado %}
-<form action=" {{ url_for('login') }} " method="POST">
-<table>
-	{{ form.hidden_tag() }}
-	{% for error in get_flashed_messages(category_filter=['login']) %}
-	<tr>
-		<td colspan="2">{{ error }}</td>
-	</tr>
-	{% endfor %}
-	<tr>
-		<td>{{ form.usuario.label }}</td>
-		<td>{{ form.usuario }}
-			{% for error in form.usuario.errors %}
-			<span style="color:red"> [{{ error }}] </span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td>{{ form.senha.label }}</td>
-		<td>{{ form.senha }}
-			{% for error in form.senha.errors %}
-			<span style="color:red"> [{{ error }}] </span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td><input type="submit" value="Login" /></td>
-	</tr>
-</table>
-</form>
-<a href="{{ url_for('registro') }}">Registrar-se</a>
+
+<ul class="panel table center">
+	<li class="panel-head">
+		<p>Login</p>
+	</li>
+	<li class="panel-body">
+		
+		<form action=" {{ url_for('login') }} " method="POST">
+		<table class="ele-space">
+			{{ form.hidden_tag() }}
+			{% for error in get_flashed_messages(category_filter=['login']) %}
+			<tr>
+				<td colspan="2">{{ error }}</td>
+			</tr>
+			{% endfor %}
+			<tr>
+				<td>{{ form.usuario.label }}</td>
+				<td>{{ form.usuario }}
+					{% for error in form.usuario.errors %}
+					<span style="color:red"> [{{ error }}] </span>
+					{% endfor %}</td>
+			</tr>
+			<tr>
+				<td>{{ form.senha.label }}</td>
+				<td>{{ form.senha }}
+					{% for error in form.senha.errors %}
+					<span style="color:red"> [{{ error }}] </span>
+					{% endfor %}</td>
+			</tr>
+			<tr>
+				<td colspan="2"><input type="submit" value="Login" class="btn center" /></td>
+			</tr>
+			<tr>
+				<td colspan="2"><a href="{{ url_for('registro') }}" class="center a">Registrar-se</a></td>
+			</tr>
+		</table>
+		</form>
+
+	<li>
+</ul>
+
 {% endblock %}

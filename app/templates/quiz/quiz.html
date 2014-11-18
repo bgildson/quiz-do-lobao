@@ -8,7 +8,7 @@
 			.done(function(data){
 				$("#rodada").text("RODADA " + data.partida['rodada']);
 				$("#cartas").text("Cartas (" + data.partida['cartas'] + ")");
-				$("#pulos").text("Pulos (" + data.partida['pular'] + ")");
+				$("#pulos").text("Pular (" + data.partida['pular'] + ")");
 
 				$("#questao-enunciado").text(data.questao['enunciado']);
 				$("#alternativa_a").text(data.questao['alternativa_a']);
@@ -73,8 +73,7 @@
 				<label id="alternativa_d" for="alternativa_d"></label></li>
 			<li><input type="radio" name="alternativa" value="e"/>
 				<label id="alternativa_e" for="alternativa_e"></label></li>
-			<li><a href="#" id="responder" class="btn">Responder</a></li>
-			<!--<li><input type="button" id="responder" value="Responder" /></li>-->
+			<li><input type="button" id="responder" class="btn center" value="Responder" /></li>
 		</ul>
 	</li>
 </ul>

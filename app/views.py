@@ -6,6 +6,7 @@ from sqlalchemy.orm import aliased
 from sqlalchemy import and_
 from app import app, db, forms
 from app.models import Usuario, Questao, Partida,PartidaResposta
+from app.enums import StatusQuestao, RetornoResposta
 from simplejson import dumps
 import hashlib
 
@@ -19,6 +20,8 @@ def get_questao(partida_id_atual=0):
 	questao = db.session.query(Questao) \
 		.outerjoin((partidas_resposta, and_(partidas_resposta.questao_id==Questao._id, partidas_resposta.partida_id==partida_id_atual))) \
 		.filter(and_(partidas_resposta._id == None)) \
+		.filter(Questao.cadastrada_por_id!=current_user._id) \
+		.filter(Questao.status==StatusQuestao.liberada.value) \
 		.order_by(func.random()) \
 		.first()
 	return questao
@@ -33,21 +36,12 @@ def load_user(id):
 @app.route('/')
 @login_required
 def home():
-	'''
-	partidas = db.session.query(Partida).all()
-	for p in partidas:
-		print('%d - %d - %d' % (p._id, p.usuario_id, p.questao_atual))
-		for r in db.session.query(PartidaResposta).filter_by(partida_id=p._id).all():
-			print('%d - %s - %d' % (r._id, r.alternativa_respondida, r.acertou))
-
-	questoes = [get_questao()]
-
-	if questoes:
-		for questao in questoes:
-			print('%d - %s - %s' % (questao._id, questao.enunciado, questao.alternativa_selecionada))
-	'''
 	return render_template('index.html', title='Home')
 
+
+'''''''''''''''''''''''''''''''''''''''''''''
+' USUARIO
+'''''''''''''''''''''''''''''''''''''''''''''
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	form = forms.UsuarioLoginForm()
@@ -95,193 +89,161 @@ def logout():
 	logout_user()
 	return redirect( url_for('login') )
 
+
+'''''''''''''''''''''''''''''''''''''''''''''
+' QUESTAO
+'''''''''''''''''''''''''''''''''''''''''''''
 @app.route('/questao')
 @login_required
 def questao():
-	questoes = db.session.query(Questao).all()
-	n = len(questoes)
+	questoes = db.session.query(Questao) \
+		.filter_by(cadastrada_por=current_user._id) \
+		.all()
 	return render_template('/questao/listar.html', questoes=questoes)
 
-@app.route('/questao/novo', methods=['GET', 'POST'])
+@app.route('/questao/enviar', methods=['GET', 'POST'])
 @login_required
-def questao_novo():
+def questao_enviar():
 	form = forms.QuestaoForm()
 	
 	if form.validate_on_submit():
 		
 		questao = Questao(form.enunciado.data, form.alternativa_a.data, form.alternativa_b.data, form.alternativa_c.data, \
-			 form.alternativa_d.data, form.alternativa_e.data, form.alternativa_correta.data, current_user)
+			 form.alternativa_d.data, form.alternativa_e.data, form.alternativa_correta.data, current_user._id)
 		db.session.add(questao)
 		db.session.commit()
 		
-		flash('Questão cadastrada com sucesso!')
+		flash('Questão enviada com sucesso!')
 		return redirect( url_for('questao'))
 		
-	return render_template('/questao/novo.html', form=form)
+	return render_template('/questao/enviar.html', form=form)
 
-@app.route('/questao/editar/<int:id>', methods=['GET', 'POST'])
-@login_required
-def questao_editar(id):
-	form = forms.QuestaoForm()
+@app.route('/questao/revisar/<int:id>', methods=['GET', 'POST'])
+@login_required # apenas para admin
+def questao_revisar(id): #antigo questao_editar
+	form = forms.QuestaoRevisarForm() # criar QuestaoRevisarForm (ira conter apenas os campos necessarios para um admin revisar)
 
 	if id:
 		questao = db.session.query(Questao).filter_by(_id=id).first()
 		if questao:
 			if form.validate_on_submit():
-				questao.init_from_QuestaoForm(form)
+				questao.revisar(form)
 				db.session.commit()
+				flash('Questão X revisada com sucesso.')
 				return redirect( url_for('questao') )
 				
-			if request.method == 'GET':
-				form.init_from_Questao(questao)
+			# revisar quais campos serao apresentados
+			form.init_from_Questao(questao)
 			
-			return render_template('/questao/editar.html', form=form, _id=questao._id)
+			return render_template('/questao/revisar.html', form=form, _id=questao._id)
 
 		flash('A questão solicitada não existe ou não está mais disponível.')
 
 	return redirect( url_for('questao') )
 
-''' depois finalizar decorator para generalizar validacao inicial das rotas
-@login_required
-def login_usuario_partida_required(func):
-	def route(*args, **kwargs):
-		usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
 
-		if usuario:
-			partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
-
-			return func(partida, *args, **kwargs)
-
-		return func(*args, **kwargs)
-
-	return route
-'''
-
+'''''''''''''''''''''''''''''''''''''''''''''
+' QUIZ
+'''''''''''''''''''''''''''''''''''''''''''''
 @app.route('/quiz/inicio')
 @login_required
 def quiz_inicio():
-	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
+	partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
 
-	if usuario:
-		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
-
-		return render_template('quiz/inicio.html', continuar=partida)
-
-	return 'Usuário não encontrado.'
+	return render_template('quiz/inicio.html', continuar=partida)
 
 @app.route('/quiz/novo')
 @login_required
 def quiz_novo():
-	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
+	partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
 
-	if usuario:
-		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
+	# se o usuario ja tem alguma partida em aberto
+	if partida:
+		partida.finalizada = True
+		db.session.commit()
 
-		# se o usuario ja tem alguma partida em aberto
-		if partida:
-			partida.finalizada = True
-			db.session.commit()
+	questao = get_questao()
 
-		# obtem uma questao que ainda nao foi respondida pelo usuario nessa partida
-		questao = get_questao()
+	if questao:
+		partida = Partida(current_user._id, questao._id)
+		db.session.add(partida)
+		db.session.commit()
 
-		if questao:
-			partida = Partida(usuario._id, questao._id)
-			db.session.add(partida)
-			db.session.commit()
+		return redirect( url_for('quiz') )
 
-			return redirect( url_for('quiz') )
-
-		return 'Não foram encontradas questões para responder.'
-
-	return 'Usuário não encontrado'
+	return 'Não foram encontradas questões para responder.'
 
 @app.route('/quiz')
 @login_required
 def quiz():
-	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
-
-	if usuario:
-		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
-		
-		if partida:
-			return render_template('quiz/quiz.html')
-		
-		return redirect( url_for('quiz_inicio') )
-
-	return 'Usuário não encontrado'
+	partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
+	
+	if partida:
+		return render_template('quiz/quiz.html')
+	
+	return redirect( url_for('quiz_inicio') )
 
 @app.route('/quiz/rodada', methods=['POST'])
 @login_required
 def quiz_rodada():
-	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
+	partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
 
-	if usuario:
-		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
+	if partida:
+		questao = db.session.query(Questao).filter_by(_id=partida.questao_atual).first()
 
-		if partida:
-			questao = db.session.query(Questao).filter_by(_id=partida.questao_atual).first()
+		if questao:
+			return jsonify(partida=partida.to_dict(), questao=questao.to_dict())
 
-			if questao:
-				return jsonify(partida=partida.to_dict(), questao=questao.to_dict())
-
-		return redirect( url_for('quiz_inicio') )
-		
-	return 'Usuário não encontrado'
+	return redirect( url_for('quiz_inicio') )
 
 @app.route('/quiz/responder', methods=['GET', 'POST'])
 @login_required
 def quiz_responder():
 	resposta = request.form['resposta']
 
-	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
-
-	if usuario and resposta_is_valid(resposta):
-		partida = db.session.query(Partida).filter_by(usuario_id=usuario._id, finalizada=False).first()
+	if resposta_is_valid(resposta):
+		partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
 
 		if partida:
 			questao_respondida = db.session.query(Questao).filter_by(_id=partida.questao_atual).first()
 
 			acertou = questao_respondida.alternativa_correta == resposta
 
-			partidas_resposta = PartidaResposta(usuario._id, questao_respondida._id, partida._id, resposta, acertou)
+			partidas_resposta = PartidaResposta(current_user._id, questao_respondida._id, partida._id, resposta, acertou)
 			db.session.add(partidas_resposta)
 			db.session.commit()
 
+			status = RetornoResposta.continua.value
 			if acertou:
 				partida.rodada = partida.rodada + 1
 				partida.questao_atual = get_questao(partida._id)._id
 			else:
 				partida.finalizada = True
-
+				status = RetornoResposta.fim_partida.value
+			
 			db.session.commit()
+			return jsonify({'status': status})
 
-			return jsonify({'acertou': acertou})
+		return jsonify({'status': RetornoResposta.error.value, 'message': 'Usuário não tem uma partida aberta!'})
 
-		return 'Partida não encontrada'
-
-	return 'Usuário não encontrado'
-
+	return jsonify({'status': RetornoResposta.error.value, 'message': 'A resposta é inválida!'})
 
 
 
 
 
-#ajustar ta tpda errada ainda
+
+#ajustar ainda ta toda errada
 def get_quiz_resultado():
-	usr = aliased(Usuario)
+	usuario = aliased(Usuario)
 	partidas = db.session.query(Partida) \
-				.outerjoin((Partida, usr)) \
+				.outerjoin((Partida, usuario)) \
 				.order_by('rodada').filter()
 	return partidas
 
 @app.route('/quiz/resultado', methods=['GET', 'POST'])
 @login_required
 def quiz_resultado():
-	usuario = db.session.query(Usuario).filter_by(_id=current_user._id).first()
 	posicao_ranking = 1 #get_quiz_resultado()
-	if usuario:
-		resultado = {'usuario': usuario.usuario, 'posicao_ranking': posicao_ranking,}
-		return render_template('/quiz/resultado.html', resultado=resultado)
-
-	return 'Usuário não encontrado'
+	resultado = {'usuario': current_user.usuario, 'posicao_ranking': posicao_ranking}
+	return render_template('/quiz/resultado.html', resultado=resultado)
