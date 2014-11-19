@@ -16,6 +16,11 @@
 				$("#alternativa_c").text(data.questao['alternativa_c']);
 				$("#alternativa_d").text(data.questao['alternativa_d']);
 				$("#alternativa_e").text(data.questao['alternativa_e']);
+				//alert(data.questao['enviado_por']);
+				//alert(data.questao['enviado_por']);
+				$("#enviado-por").text(data.questao['enviada_por']);
+				$("#revisado-por").text(data.questao['revisada_por']);
+
 				$("input:radio[name=alternativa][value=a]").prop('checked', true);
 			})
 			.fail(function(fail){
@@ -43,6 +48,28 @@
 		$("#responder").bind('click', function(){
 			envia_resposta();
 		});
+
+		$("#pular").bind('click', function(){
+			$.post("{{ url_for('quiz_pular') }}")
+				.done(function(data){
+					var acertou = data['acertou'];
+					if(acertou){
+						ajusta_rodada();
+					}else{
+						window.location.replace("{{ url_for('quiz_resultado') }}");
+					}
+				})
+				.fail(function(fail){
+					alert('error');
+				});
+			ajusta_rodada();
+		});
+
+		/*qndo a page atualizar*/
+		$(document).ready(function(){
+			ajusta_rodada();
+			//alert($('#'));
+		});
 	});
 </script>
 {% endblock %}
@@ -53,17 +80,17 @@
 	<p id="rodada">RODADA X</p>
 	<ul class="list-left">
 		<li><a href="#" id="cartas">Cartas (X)</a></li>
-		<li><a href="#" id="pulos">Pular (X)</a></li>
+		<li><a href="#" id="pular">Pular (X)</a></li>
 	</ul>
 </div>
 
 <ul id="questao">
 	<li>
-		<p id="questao-enunciado"></p>
+		<p id="questao-enunciado" class="enunciado"></p>
 	</li>
 	<li id="alternativas">
 		<ul>
-			<li><input checked type="radio" id="alternativa_aa" name="alternativa" value="a"/>
+			<li><input checked type="radio" name="alternativa" value="a"/>
 				<label id="alternativa_a" for="alternativa_a"></label></li>
 			<li><input type="radio" name="alternativa" value="b"/>
 				<label id="alternativa_b" for="alternativa_b"></label></li>
@@ -74,6 +101,7 @@
 			<li><input type="radio" name="alternativa" value="e"/>
 				<label id="alternativa_e" for="alternativa_e"></label></li>
 			<li><input type="button" id="responder" class="btn center" value="Responder" /></li>
+			<li><p class="right copyright">enviado por <span class="a" id="enviado-por"></span> - revisado por <span class="a" id="revisado-por"></span></p></li>
 		</ul>
 	</li>
 </ul>

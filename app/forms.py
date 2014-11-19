@@ -19,12 +19,12 @@ class UsuarioLoginForm(Form):
 
 
 class QuestaoForm(Form):
-	enunciado = TextAreaField('Enunciado', validators=[Required('O campo "Enunciado" é obrigatório.')])
-	alternativa_a = TextField('Alternativa A', validators=[Required('O campo "Alternativa A" é obrigatório.')])
-	alternativa_b = TextField('Alternativa B', validators=[Required('O campo "Alternativa B" é obrigatório.')])
-	alternativa_c = TextField('Alternativa C', validators=[Required('O campo "Alternativa C" é obrigatório.')])
-	alternativa_d = TextField('Alternativa D', validators=[Required('O campo "Alternativa D" é obrigatório.')])
-	alternativa_e = TextField('Alternativa E', validators=[Required('O campo "Alternativa E" é obrigatório.')])
+	enunciado = TextAreaField('Enunciado', validators=[Required('O campo obrigatório')])
+	alternativa_a = TextField('Alternativa A', validators=[Required('O campo obrigatório')])
+	alternativa_b = TextField('Alternativa B', validators=[Required('O campo obrigatório')])
+	alternativa_c = TextField('Alternativa C', validators=[Required('O campo obrigatório')])
+	alternativa_d = TextField('Alternativa D', validators=[Required('O campo obrigatório')])
+	alternativa_e = TextField('Alternativa E', validators=[Required('O campo obrigatório')])
 	alternativa_correta = RadioField('Alternativa Correta', default='a', choices=[('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E')], validators=[Required('Escolha uma das opções disponibilizadas como resposta.')])
 	
 	def init_from_Questao(self, questao):

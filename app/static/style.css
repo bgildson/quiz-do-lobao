@@ -18,6 +18,9 @@ body {
 	padding: 5px;
 	border-spacing: 0;
 }
+.ele-space-hor {
+	padding: 10px 70px;
+}
 .a, .a:visited {
 	color: #17987E;
 }
@@ -77,6 +80,16 @@ body {
 .tabela, .tabela td {
 	border: solid 1px #263A4A;
 }
+.enunciado {
+	font-size: 20px;
+	font-weight: bold;
+}
+.enunciado textarea {
+	width: 590px;
+}
+.txt-enunciado, .txt-observacoes {
+	width: 450px;
+}
 .l-q-enunciado {
 	width: 500px;
 }
@@ -85,6 +98,22 @@ body {
 }
 .block {
 	display: block;
+}
+.bold {
+	font-weight: bold;
+}
+.red {
+	color:red;
+}
+.copyright {
+	font-size: 11px;
+	float: right;
+}
+.copyright a {
+	font-style: italic;
+}
+#enviado-por, #revisado-por {
+	font-style: italic;
 }
 #top {
 	width: 100%;

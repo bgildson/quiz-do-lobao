@@ -17,8 +17,8 @@
 	{% for questao in questoes %}
 	<tr>
 		<td>{{ questao.enunciado }}</td>
-		<td>{{ questao.data_de_envio }}</td>
-		<td>{{ questao.status_descricao() }}</td>
+		<td><p class="center">{{ questao.data_de_envio }}</p></td>
+		<td><p class="center">{{ questao.status_descricao() }}</p></td>
 	</tr>
 	{% endfor %}
 </table>

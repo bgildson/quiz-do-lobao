@@ -90,7 +90,7 @@ class Questao(db.Model):
 				'alternativa_d': self.alternativa_d,
 				'alternativa_e': self.alternativa_e,
 				'enviada_por': self.enviada_por_usuario(),
-				'revisada_por': self.revisada_por,
+				'revisada_por': self.revisada_por_usuario(),
 				}
 
 	def init_from_QuestaoForm(self, form):
@@ -165,7 +165,7 @@ class PartidaResposta(db.Model):
 	alternativa_respondida = db.Column(db.String(1))
 	resultado = db.Column(db.Integer)
 
-	def __init__(self, usuario_id, questao_id, partida_id, alternativa_respondida, resultado):
+	def __init__(self, usuario_id, questao_id, partida_id, alternativa_respondida, resultado=PartidasRespostaResultado.aguardando.value):
 		self.usuario_id = usuario_id
 		self.questao_id = questao_id
 		self.partida_id = partida_id

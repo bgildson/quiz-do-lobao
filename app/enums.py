@@ -25,4 +25,5 @@ class QuestaoAlternativaCorreta(Enum):
 class PartidasRespostaResultado(Enum):
     errou = 0
     acertou = 1
-    pulou = 2
+    aguardando = 2
+    pulou = 3

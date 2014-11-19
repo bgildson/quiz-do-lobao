@@ -1,68 +1,77 @@
 {% extends 'questao/base.html' %}
 {% block questao %}
 <form action="{{ url_for('questao_enviar') }}" method="POST">
-<table>
+<ul class="no-list ele-space">
 	{{ form.hidden_tag() }}
 	{% for message in get_flashed_messages() %}
-	<tr>
-		<td colspan='2'> {{ message }} </td>
-	</tr>
+	<li> {{ message }} </li>
 	{% endfor %}
-	<tr>
-		<td>{{ form.enunciado.label }}</td>
-		<td>{{ form.enunciado }}
-			{% for error in form.enunciado.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td>{{ form.alternativa_a.label }}</td>
-		<td>
-			<input checked id="alternativa_correta-0" name="alternativa_correta" type="radio" value="a">
-			{{ form.alternativa_a }}
-			{% for error in form.alternativa_a.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td>{{ form.alternativa_b.label }}</td>
-		<td>
-			<input id="alternativa_correta-1" name="alternativa_correta" type="radio" value="b">
-			{{ form.alternativa_b }}
-			{% for error in form.alternativa_b.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td>{{ form.alternativa_c.label }}</td>
-		<td>
-			<input id="alternativa_correta-2" name="alternativa_correta" type="radio" value="c">
-			{{ form.alternativa_c }}
-			{% for error in form.alternativa_c.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td>{{ form.alternativa_d.label }}</td>
-		<td>
-			<input id="alternativa_correta-3" name="alternativa_correta" type="radio" value="d">
-			{{ form.alternativa_d }}
-			{% for error in form.alternativa_d.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td>{{ form.alternativa_e.label }}</td>
-		<td>
-			<input id="alternativa_correta-4" name="alternativa_correta" type="radio" value="e">
-			{{ form.alternativa_e }}
-			{% for error in form.alternativa_e.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
-	</tr>
-	<tr>
-		<td colspan="2"><input type="submit" class="btn center" value="Enviar" /></td>
-	</tr>
-</table>
+	<li class="enunciado">
+		{{ form.enunciado(placeholder='Enunciado') }}
+		<span class="red bold">*
+		{% for error in form.alternativa_a.errors %}
+			[{{ error }}]
+		{% endfor %}
+		</span>
+	</li>
+	<li>
+		<ul class="ele-space-hor">
+			<li>
+				<input checked id="alternativa_correta-0" name="alternativa_correta" type="radio" value="a" />
+				A. 
+				{{ form.alternativa_a }}
+				<span class="red bold">*
+				{% for error in form.alternativa_a.errors %}
+					[{{ error }}]
+				{% endfor %}
+				</span>
+			</li>
+			<li>
+				<input id="alternativa_correta-1" name="alternativa_correta" type="radio" value="b">
+				B.
+				{{ form.alternativa_b }}
+				<span class="red bold">*
+				{% for error in form.alternativa_b.errors %}
+					[{{ error }}]
+				{% endfor %}
+				</span>
+			</li>
+			<li>
+				<input id="alternativa_correta-2" name="alternativa_correta" type="radio" value="c">
+				C. 
+				{{ form.alternativa_c }}
+				<span class="red bold">*
+				{% for error in form.alternativa_c.errors %}
+					[{{ error }}]
+				{% endfor %}
+				</span>
+			</li>
+			<li>
+				<input id="alternativa_correta-3" name="alternativa_correta" type="radio" value="d">
+				D. 
+				{{ form.alternativa_d }}
+				<span class="red bold">*
+				{% for error in form.alternativa_d.errors %}
+					[{{ error }}]
+				{% endfor %}
+				</span>
+			</li>
+			<li>
+				<input id="alternativa_correta-4" name="alternativa_correta" type="radio" value="e">
+				E. 
+				{{ form.alternativa_e }}
+				<span class="red bold">*
+				{% for error in form.alternativa_e.errors %}
+					[{{ error }}]
+				{% endfor %}
+				</span>
+			</li>
+		</ul>
+	</li>
+	<li>
+		<input type="submit" class="btn center" value="Enviar" />
+	</li>
+</ul>
+
 </form>
 {% endblock %}
