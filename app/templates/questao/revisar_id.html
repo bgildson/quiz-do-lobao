@@ -9,59 +9,61 @@
 	</tr>
 	{% endfor %}
 	<tr>
-		<td>{{ form.enunciado.label }}</td>
-		<td>{{ form.enunciado }}
-			{% for error in form.enunciado.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
+		<td>Enunciado</td>
+		<td>{{ form.enunciado }}</td>
 	</tr>
 	<tr>
-		<td>{{ form.alternativa_a.label }}</td>
+		<td>Alternativa A</td>
 		<td>
 			<input checked id="alternativa_correta-0" name="alternativa_correta" type="radio" value="a">
-			{{ form.alternativa_a }}
-			{% for error in form.alternativa_a.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
+			{{ form.alternativa_a }}</td>
 	</tr>
 	<tr>
-		<td>{{ form.alternativa_b.label }}</td>
+		<td>Alternativa B</td>
 		<td>
 			<input id="alternativa_correta-1" name="alternativa_correta" type="radio" value="b">
-			{{ form.alternativa_b }}
-			{% for error in form.alternativa_b.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
+			{{ form.alternativa_b }}</td>
 	</tr>
 	<tr>
-		<td>{{ form.alternativa_c.label }}</td>
+		<td>Alternativa C</td>
 		<td>
 			<input id="alternativa_correta-2" name="alternativa_correta" type="radio" value="c">
-			{{ form.alternativa_c }}
-			{% for error in form.alternativa_c.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
+			{{ form.alternativa_c }}</td>
 	</tr>
 	<tr>
-		<td>{{ form.alternativa_d.label }}</td>
+		<td>Alternativa D</td>
 		<td>
 			<input id="alternativa_correta-3" name="alternativa_correta" type="radio" value="d">
-			{{ form.alternativa_d }}
-			{% for error in form.alternativa_d.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
+			{{ form.alternativa_d }}</td>
 	</tr>
 	<tr>
-		<td>{{ form.alternativa_e.label }}</td>
+		<td>Alternativa E</td>
 		<td>
 			<input id="alternativa_correta-4" name="alternativa_correta" type="radio" value="e">
-			{{ form.alternativa_e }}
-			{% for error in form.alternativa_e.errors %}
-			<span style="color:red;">{{ error }}</span>
-			{% endfor %}</td>
+			{{ form.alternativa_e }}</td>
 	</tr>
 	<tr>
-		<td><input type="submit" class="btn center" value="Atualizar" /></td>
+		<td>Data de Envio</td>
+		<td>{{ form.data_de_envio }}</td>
+	</tr>
+	<tr>
+		<td>Enviada por</td>
+		<td>{{ form.enviada_por }}</td>
+	</tr>
+	<tr>
+		<td>Revisada por</td>
+		<td>{{ form.revisada_por }}</td>
+	</tr>
+	<tr>
+		<td>{{ form.observacoes.label }}</td>
+		<td>{{ form.observacoes }}</td>
+	</tr>
+	<tr>
+		<td>{{ form.status.label }}</td>
+		<td>{{ form.status }}</td>
+	</tr>
+	<tr>
+		<td><input type="submit" class="btn center" value="Revisar" /></td>
 	</tr>
 </table>
 </form>

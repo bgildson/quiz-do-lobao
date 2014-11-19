@@ -6,6 +6,7 @@ from app.enums import QuestaoStatus, RetornoResposta
 import hashlib
 from datetime import datetime
 
+
 class Usuario(db.Model):
 	__tablename__ = 'usuarios'
 
@@ -27,7 +28,8 @@ class Usuario(db.Model):
 
 	def to_dict(self):
 		return {'id': self._id,
-				'usuario': self.usuario}
+				'usuario': self.usuario,
+				}
 
 	def is_authenticated(self):
 		return True
@@ -46,6 +48,7 @@ class Usuario(db.Model):
 
 	def get_role(self):
 		return self.role
+
 
 class Questao(db.Model):
 	__tablename__ = 'cad_questoes'
@@ -87,7 +90,8 @@ class Questao(db.Model):
 				'alternativa_d': self.alternativa_d,
 				'alternativa_e': self.alternativa_e,
 				'enviada_por': self.enviada_por_usuario(),
-				'revisada_por': self.revisada_por}
+				'revisada_por': self.revisada_por,
+				}
 
 	def init_from_QuestaoForm(self, form):
 		self.enunciado = form.enunciado.data
@@ -99,9 +103,9 @@ class Questao(db.Model):
 		self.alternativa_correta = form.alternativa_correta.data.lower()
 		self.status = form.status.data
 
-	def revisar(self, form):
+	def revisar(self, form, revisada_por):
 		self.status = form.status.data
-		self.revisada_por = form.revisada_por.data
+		self.revisada_por = revisada_por
 		self.observacoes = form.observacoes.data
 
 	def status_descricao(self):
@@ -113,6 +117,13 @@ class Questao(db.Model):
 
 	def enviada_por_usuario(self):
 		return db.session.query(Usuario).filter_by(_id=self.enviada_por).first().usuario or ''
+
+	def revisada_por_usuario(self):
+		usuario = db.session.query(Usuario).filter_by(_id=self.revisada_por).first()
+		if usuario:
+			return usuario.usuario	
+		return ''
+
 
 class Partida(db.Model):
 	__tablename__ = 'partidas'
@@ -140,7 +151,9 @@ class Partida(db.Model):
 		return {'rodada': self.rodada,
 				'cartas': self.cartas,
 				'pular': self.pular,
-				'finalizada': self.finalizada}
+				'finalizada': self.finalizada,
+				}
+
 
 class PartidaResposta(db.Model):
 	__tablename__ = 'partidas_resposta'
