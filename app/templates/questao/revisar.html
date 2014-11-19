@@ -6,19 +6,19 @@
 	<h3 class="center ele-space">{{message}}</h3>
 {% endfor %}
 
-<a href="{{ url_for('questao_enviar') }}" class="btn center"> Novo </a>
-
 <table class="lista-questoes tabela">
 	<tr>
 		<th class="l-q-enunciado">Enunciado</th>
 		<th class="l-q-data-de-cadastro">Data de Cadastro</th>
-		<th class="l-q-cadastrada-por">Status</th>
+		<th class="l-q-status">Status</th>
+		<th class="l-q-enviada-por">Enviada Por</th>
 	</tr>
 	{% for questao in questoes %}
 	<tr>
-		<td>{{ questao.enunciado }}</td>
+		<td><a href="/questao/revisar/{{questao._id}}">{{ questao.enunciado }}</a></td>
 		<td>{{ questao.data_de_envio }}</td>
 		<td>{{ questao.status_descricao() }}</td>
+		<td>{{ questao.enviada_por_usuario() }}</td>
 	</tr>
 	{% endfor %}
 </table>

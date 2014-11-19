@@ -2,7 +2,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from app import db
-from app.enums import StatusQuestao, RetornoResposta
+from app.enums import QuestaoStatus, RetornoResposta
 import hashlib
 from datetime import datetime
 
@@ -14,12 +14,16 @@ class Usuario(db.Model):
 	email = db.Column(db.String, unique=True)
 	senha = db.Column(db.String(32))
 	data_cadastro = db.Column(db.DateTime)
+	role = db.Column(db.String)
+	ativo = db.Column(db.Boolean)
 
 	def __init__(self, usuario, email, senha):
 		self.usuario = usuario.lower()
 		self.email = email.lower()
 		self.senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
 		self.data_cadastro = datetime.now()
+		self.role = 'usr'
+		self.ativo = True
 
 	def to_dict(self):
 		return {'id': self._id,
@@ -29,13 +33,19 @@ class Usuario(db.Model):
 		return True
 
 	def is_active(self):
-		return True
+		return self.ativo
 
 	def is_anonymous(self):
 		return False
 
+	def is_admin(self):
+		return self.role == 'admin'
+
 	def get_id(self):
 		return self._id
+
+	def get_role(self):
+		return self.role
 
 class Questao(db.Model):
 	__tablename__ = 'cad_questoes'
@@ -47,8 +57,9 @@ class Questao(db.Model):
 	alternativa_c = db.Column(db.String)
 	alternativa_d = db.Column(db.String)
 	alternativa_e = db.Column(db.String)
-	status = db.Column(db.Integer)
 	alternativa_correta = db.Column(db.String(1))
+	status = db.Column(db.Integer)
+	data_de_envio = db.Column(db.DateTime)
 	enviada_por = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
 	revisada_por = db.Column(db.Integer, ForeignKey('usuarios._id'))
 	observacoes = db.Column(db.String(100))
@@ -61,8 +72,9 @@ class Questao(db.Model):
 		self.alternativa_c = alternativa_c
 		self.alternativa_d = alternativa_d
 		self.alternativa_e = alternativa_e
-		self.status = False
 		self.alternativa_correta = alternativa_correta.lower()
+		self.status = QuestaoStatus.nao_revisada.value
+		self.data_de_envio = datetime.now()
 		self.enviada_por = usuario_id
 
 	# nem todos os campos devem ser colocados na criacao do dicionario
@@ -84,12 +96,20 @@ class Questao(db.Model):
 		self.alternativa_c = form.alternativa_c.data
 		self.alternativa_d = form.alternativa_d.data
 		self.alternativa_e = form.alternativa_e.data
-		self.status = form.status.data
 		self.alternativa_correta = form.alternativa_correta.data.lower()
+		self.status = form.status.data
 
 	def revisar(self, form):
+		self.status = form.status.data
 		self.revisada_por = form.revisada_por.data
 		self.observacoes = form.observacoes.data
+
+	def status_descricao(self):
+		if self.status == QuestaoStatus.bloqueada.value:
+			return 'Bloqueada'
+		elif self.status == QuestaoStatus.liberada.value:
+			return 'Liberada'
+		return 'Não Revisada'
 
 	def enviada_por_usuario(self):
 		return db.session.query(Usuario).filter_by(_id=self.enviada_por).first().usuario or ''
@@ -99,6 +119,7 @@ class Partida(db.Model):
 
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	usuario_id = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
+	data_da_partida = db.Column(db.DateTime)
 	questao_atual = db.Column(db.Integer, ForeignKey('cad_questoes._id'), nullable=False)
 	rodada = db.Column(db.Integer)
 	cartas = db.Column(db.Integer)
@@ -108,6 +129,7 @@ class Partida(db.Model):
 
 	def __init__(self, usuario_id, questao_id):
 		self.usuario_id = usuario_id
+		self.data_da_partida = datetime.now()
 		self.questao_atual = questao_id
 		self.rodada = 1
 		self.cartas = 1
@@ -128,11 +150,11 @@ class PartidaResposta(db.Model):
 	questao_id = db.Column(db.Integer, ForeignKey('cad_questoes._id'), nullable=False)
 	partida_id = db.Column(db.Integer, ForeignKey('partidas._id'), nullable=False)
 	alternativa_respondida = db.Column(db.String(1))
-	acertou = db.Column(db.Boolean)
+	resultado = db.Column(db.Integer)
 
-	def __init__(self, usuario_id, questao_id, partida_id, alternativa_respondida, acertou):
+	def __init__(self, usuario_id, questao_id, partida_id, alternativa_respondida, resultado):
 		self.usuario_id = usuario_id
 		self.questao_id = questao_id
 		self.partida_id = partida_id
 		self.alternativa_respondida = alternativa_respondida
-		self.acertou = acertou
+		self.resultado = resultado

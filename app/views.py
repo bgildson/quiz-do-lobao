@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from flask import render_template, request, redirect, url_for, flash, jsonify
-from flask.ext.login import LoginManager, current_user, login_user, logout_user, login_required
+from flask.ext.login import LoginManager, current_app, current_user, login_user, logout_user
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import aliased
 from sqlalchemy import and_
 from app import app, db, forms
 from app.models import Usuario, Questao, Partida,PartidaResposta
-from app.enums import StatusQuestao, RetornoResposta
+from app.enums import QuestaoStatus, RetornoResposta
 from simplejson import dumps
+from functools import wraps
 import hashlib
 
 lm = LoginManager()
@@ -15,26 +16,49 @@ lm.init_app(app)
 lm.login_view = 'login'
 
 
+# decorator personalizado para implementar restricoes de acesso nas views (open source, te amo - haha)
+def login_required(*roles):
+	def wrapper(func):
+		@wraps(func)
+		def decorated_view(*args, **kwargs):
+
+			if current_app.login_manager._login_disabled:
+				return func(*args, **kwargs)
+
+			if not current_user.is_authenticated():
+				return current_app.login_manager.unauthorized()
+
+			usuario_role = current_user.get_role()
+			if (len(roles) > 0) and (usuario_role not in roles):
+				logout_user()
+				return current_app.login_manager.unauthorized()
+			return func(*args, **kwargs)
+		return decorated_view
+	return wrapper
+
+def QuestaoAlternativaCorreta_is_valid(resposta):
+	return resposta in [x.value for x in QuestaoAlternativaCorreta]
+
+def QuestaoStatus_is_valid(status):
+	return status in [x.value for x in QuestaoStatus]
+
 def get_questao(partida_id_atual=0):
 	partidas_resposta = aliased(PartidaResposta)
 	questao = db.session.query(Questao) \
 		.outerjoin((partidas_resposta, and_(partidas_resposta.questao_id==Questao._id, partidas_resposta.partida_id==partida_id_atual))) \
 		.filter(and_(partidas_resposta._id == None)) \
 		.filter(Questao.cadastrada_por_id!=current_user._id) \
-		.filter(Questao.status==StatusQuestao.liberada.value) \
+		.filter(Questao.status==QuestaoStatus.liberada.value) \
 		.order_by(func.random()) \
 		.first()
 	return questao
-
-def resposta_is_valid(resposta):
-	return resposta in ['a', 'b', 'c', 'd', 'e']
 
 @lm.user_loader
 def load_user(id):
 	return db.session.query(Usuario).filter_by(_id=id).first()
 
 @app.route('/')
-@login_required
+@login_required()
 def home():
 	return render_template('index.html', title='Home')
 
@@ -94,15 +118,15 @@ def logout():
 ' QUESTAO
 '''''''''''''''''''''''''''''''''''''''''''''
 @app.route('/questao')
-@login_required
+@login_required()
 def questao():
 	questoes = db.session.query(Questao) \
-		.filter_by(cadastrada_por=current_user._id) \
+		.filter_by(enviada_por=current_user._id) \
 		.all()
 	return render_template('/questao/listar.html', questoes=questoes)
 
 @app.route('/questao/enviar', methods=['GET', 'POST'])
-@login_required
+@login_required()
 def questao_enviar():
 	form = forms.QuestaoForm()
 	
@@ -118,10 +142,16 @@ def questao_enviar():
 		
 	return render_template('/questao/enviar.html', form=form)
 
+@app.route('/questao/revisar')
+@login_required('admin')
+def questao_revisar():
+	questoes = db.session.query(Questao).order_by(func.random()).limit(10)
+	return render_template('/questao/revisar.html', questoes=questoes)
+
 @app.route('/questao/revisar/<int:id>', methods=['GET', 'POST'])
-@login_required # apenas para admin
-def questao_revisar(id): #antigo questao_editar
-	form = forms.QuestaoRevisarForm() # criar QuestaoRevisarForm (ira conter apenas os campos necessarios para um admin revisar)
+@login_required('admin')
+def questao_revisar_id(id):
+	form = forms.QuestaoRevisarForm()
 
 	if id:
 		questao = db.session.query(Questao).filter_by(_id=id).first()
@@ -135,25 +165,25 @@ def questao_revisar(id): #antigo questao_editar
 			# revisar quais campos serao apresentados
 			form.init_from_Questao(questao)
 			
-			return render_template('/questao/revisar.html', form=form, _id=questao._id)
+			return render_template('/questao/revisar.html', form=form, questao_id=questao._id)
 
 		flash('A questão solicitada não existe ou não está mais disponível.')
 
-	return redirect( url_for('questao') )
+	return redirect( url_for('questao_revisar') )
 
 
 '''''''''''''''''''''''''''''''''''''''''''''
 ' QUIZ
 '''''''''''''''''''''''''''''''''''''''''''''
 @app.route('/quiz/inicio')
-@login_required
+@login_required()
 def quiz_inicio():
 	partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
 
 	return render_template('quiz/inicio.html', continuar=partida)
 
 @app.route('/quiz/novo')
-@login_required
+@login_required()
 def quiz_novo():
 	partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
 
@@ -174,7 +204,7 @@ def quiz_novo():
 	return 'Não foram encontradas questões para responder.'
 
 @app.route('/quiz')
-@login_required
+@login_required()
 def quiz():
 	partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
 	
@@ -184,7 +214,7 @@ def quiz():
 	return redirect( url_for('quiz_inicio') )
 
 @app.route('/quiz/rodada', methods=['POST'])
-@login_required
+@login_required()
 def quiz_rodada():
 	partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
 
@@ -197,11 +227,11 @@ def quiz_rodada():
 	return redirect( url_for('quiz_inicio') )
 
 @app.route('/quiz/responder', methods=['GET', 'POST'])
-@login_required
+@login_required()
 def quiz_responder():
 	resposta = request.form['resposta']
 
-	if resposta_is_valid(resposta):
+	if QuestaoAlternativaCorreta_is_valid(resposta):
 		partida = db.session.query(Partida).filter_by(usuario_id=current_user._id, finalizada=False).first()
 
 		if partida:
@@ -242,7 +272,7 @@ def get_quiz_resultado():
 	return partidas
 
 @app.route('/quiz/resultado', methods=['GET', 'POST'])
-@login_required
+@login_required()
 def quiz_resultado():
 	posicao_ranking = 1 #get_quiz_resultado()
 	resultado = {'usuario': current_user.usuario, 'posicao_ranking': posicao_ranking}

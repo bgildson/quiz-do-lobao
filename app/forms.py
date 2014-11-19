@@ -36,7 +36,7 @@ class QuestaoForm(Form):
 class QuestaoRespostaForm(Form):
 	pass
 
-class QuestaoRevisaoForm(Form):
+class QuestaoRevisarForm(Form):
 	status = SelectField('Status', choices=[(0, 'Não Revisada'), (1, 'Liberada'), (2, 'Bloqueada')])
 	observacoes = TextAreaField('Observações')
 

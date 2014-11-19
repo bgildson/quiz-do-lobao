@@ -1,6 +1,6 @@
 {% extends 'questao/base.html' %}
 {% block questao %}
-<form action="/questao/editar/{{ _id }}" method="POST">
+<form action="/questao/revisar/{{ questao_id }}" method="POST">
 <table>
 	{{ form.hidden_tag() }}
 	{% for message in get_flashed_messages() %}

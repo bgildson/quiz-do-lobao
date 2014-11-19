@@ -119,10 +119,14 @@ body {
 	margin-right: 20px;
 	float: left;
 	display: table;
+}
+#menu ul {
 	background: #263A4A;
+	margin-bottom: 20px;
 	box-shadow: 2px 5px 5px #888888;
 }
 #menu ul li a {
+	text-align: center;
 	padding: 10px 30px;
 	display: table;
 	width: 240px;
