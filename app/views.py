@@ -72,7 +72,6 @@ def home():
     partida = db.session.query(Partida) \
         .order_by(Partida.rodada) \
         .all()
-    import pdb; pdb.set_trace()
     return render_template('index.html')
 
 
