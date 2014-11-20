@@ -7,7 +7,7 @@ from sqlalchemy.orm import aliased
 from sqlalchemy import and_
 from app import app, db, forms
 from app.models import Usuario, Questao, Partida, PartidaResposta
-from app.enums import QuestaoStatus, RetornoResposta
+from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, QuestaoAlternativaCorreta
 from simplejson import dumps
 from functools import wraps
 
@@ -82,7 +82,9 @@ def login():
 
     if form.validate_on_submit():
         usuario = db.session.query(Usuario) \
-            .filter_by(usuario=form.usuario.data.lower(), senha=hashlib.md5(form.senha.data.encode('utf-8')).hexdigest()) \
+            .filter_by(usuario=form.usuario.data.lower(), 
+                       senha=hashlib.md5(form.senha.data.encode('utf-8')).hexdigest(), 
+                       ativo=True) \
             .first()
         if usuario:
             login_user(usuario)
@@ -168,7 +170,10 @@ def questao_enviar():
 @app.route('/questao/revisar')
 @login_required('admin')
 def questao_revisar():
-    questoes = db.session.query(Questao).order_by(func.random()).limit(10)
+    questoes = db.session.query(Questao) \
+        .order_by(Questao.status) \
+        .order_by(func.random()) \
+        .limit(10)
     return render_template('/questao/revisar.html', questoes=questoes)
 
 
@@ -246,7 +251,7 @@ def quiz_novo():
 
         return redirect(url_for('quiz'))
 
-    return 'Não foram encontradas questões para responder.'
+    return jsonify({'status': RetornoResposta.error.value, 'message': 'Não foram encontradas questões para responder, por favor inicie uma nova partida ou tente continuar mais tarde.'})
 
 
 @app.route('/quiz/rodada', methods=['POST'])
@@ -267,7 +272,7 @@ def quiz_rodada():
     return redirect(url_for('quiz_inicio'))
 
 
-@app.route('/quiz/responder', methods=['GET', 'POST'])
+@app.route('/quiz/responder', methods=['POST'])
 @login_required()
 def quiz_responder():
     resposta = request.form['resposta']
@@ -286,25 +291,29 @@ def quiz_responder():
 
             resultado = PartidasRespostaResultado.acertou.value if acertou else PartidasRespostaResultado.errou.value
 
-            partidas_resposta = PartidaResposta(current_user._id, questao_respondida._id,
-                                                partida._id, resposta, resultado)
-            db.session.add(partidas_resposta)
-            db.session.commit()
+            try:
+                partidas_resposta = PartidaResposta(current_user._id, questao_respondida._id,
+                                                    partida._id, resposta, resultado)
+                db.session.add(partidas_resposta)
 
-            status = RetornoResposta.continua.value
-            if acertou:
-                partida.rodada += 1
-                partida.questao_atual = get_questao(partida._id)._id
-            else:
-                partida.finalizada = True
-                status = RetornoResposta.fim_partida.value
+                status = RetornoResposta.continua.value
+                if acertou:
+                    partida.rodada += 1
+                    partida.questao_atual = get_questao(partida._id)._id
+                else:
+                    partida.finalizada = True
+                    status = RetornoResposta.fim_partida.value
 
-            db.session.commit()
-            return jsonify({'status': status})
+                db.session.commit()
+                return jsonify({'status': status})
+
+            except:
+                db.session.rollback()
+                return jsonify({'status': RetornoResposta.error.value, 'message': 'Ocorreu um erro ao tentar processar sua resposta, por favor, tente mais tarde!'})
 
         return jsonify({'status': RetornoResposta.error.value, 'message': 'Usuário não tem uma partida aberta!'})
 
-    return jsonify({'status': RetornoResposta.error.value, 'message': 'A resposta é inválida!'})
+    return jsonify({'status': RetornoResposta.error.value, 'message': 'A resposta enviada é inválida!'})
 
 
 @app.route('/quiz/pular', methods=['POST'])
@@ -337,7 +346,7 @@ def quiz_pular():
         return jsonify({'status': RetornoResposta.error.value, 'message': 'Questão da partida atual não foi encontrada!'})        
 
     return jsonify({'status': RetornoResposta.error.value, 'message': 'Não existe uma partida aberta!'})
-        
+    
 
 # ajustar ainda ta toda errada
 def get_quiz_resultado():

@@ -63,8 +63,8 @@ class QuestaoRevisarForm(Form):
 		self.alternativa_d = questao.alternativa_d
 		self.alternativa_e = questao.alternativa_e
 		self.alternativa_correta = questao.alternativa_correta
-		self.data_de_envio = questao.data_de_envio
-		self.enviada_por = questao.enviada_por_usuario()
-		self.revisada_por = questao.revisada_por_usuario() or ''
+		self.data_de_envio = questao.data_de_envio_f1
+		self.enviada_por = questao.enviada_por_usuario
+		self.revisada_por = questao.revisada_por_usuario or ''
 		self.status.data = str(questao.status)
 		self.observacoes.data = questao.observacoes

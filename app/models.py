@@ -2,7 +2,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from app import db
-from app.enums import QuestaoStatus, RetornoResposta
+from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado
 import hashlib
 from datetime import datetime
 
@@ -89,8 +89,8 @@ class Questao(db.Model):
 				'alternativa_c': self.alternativa_c,
 				'alternativa_d': self.alternativa_d,
 				'alternativa_e': self.alternativa_e,
-				'enviada_por': self.enviada_por_usuario(),
-				'revisada_por': self.revisada_por_usuario(),
+				'enviada_por': self.enviada_por_usuario,
+				'revisada_por': self.revisada_por_usuario,
 				}
 
 	def init_from_QuestaoForm(self, form):
@@ -108,6 +108,7 @@ class Questao(db.Model):
 		self.revisada_por = revisada_por
 		self.observacoes = form.observacoes.data
 
+	@property
 	def status_descricao(self):
 		if self.status == QuestaoStatus.bloqueada.value:
 			return 'Bloqueada'
@@ -115,15 +116,20 @@ class Questao(db.Model):
 			return 'Liberada'
 		return 'Não Revisada'
 
+	@property
 	def enviada_por_usuario(self):
 		return db.session.query(Usuario).filter_by(_id=self.enviada_por).first().usuario or ''
 
+	@property
 	def revisada_por_usuario(self):
 		usuario = db.session.query(Usuario).filter_by(_id=self.revisada_por).first()
 		if usuario:
 			return usuario.usuario	
 		return ''
 
+	@property
+	def data_de_envio_f1(self):
+		return self.data_de_envio.strftime('%d/%m/%Y %H:%M')
 
 class Partida(db.Model):
 	__tablename__ = 'partidas'
@@ -144,7 +150,7 @@ class Partida(db.Model):
 		self.questao_atual = questao_id
 		self.rodada = 1
 		self.cartas = 1
-		self.pular = 1
+		self.pular = 3
 		self.finalizada = False
 
 	def to_dict(self):
