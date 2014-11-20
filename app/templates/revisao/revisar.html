@@ -1,0 +1,70 @@
+{% extends 'revisao/base.html' %}
+{% block revisao %}
+<form action="/questao/revisar/{{ questao_id }}" method="POST">
+<ul class="no-list ele-space">
+	{{ form.hidden_tag() }}
+	{% for message in get_flashed_messages() %}
+	<li> {{ message }} </li>
+	{% endfor %}
+	<li class="enunciado">
+		{{ form.enunciado }}
+	</li>
+	<li>
+		<ul class="ele-space-hor">
+			<li>
+				<input id="alternativa_correta-0" name="alternativa_correta" type="radio" value="a">
+				<span class="bold">A. </span>
+				{{ form.alternativa_a }}
+			</li>
+			<li>
+				<input id="alternativa_correta-1" name="alternativa_correta" type="radio" value="b">
+				<span class="bold">B. </span>
+				{{ form.alternativa_b }}
+			</li>
+			<li>
+				<input id="alternativa_correta-2" name="alternativa_correta" type="radio" value="c">
+				<span class="bold">C. </span>
+				{{ form.alternativa_c }}
+			</li>
+			<li>
+				<input id="alternativa_correta-3" name="alternativa_correta" type="radio" value="d">
+				<span class="bold">D. </span>
+				{{ form.alternativa_d }}
+			</li>
+			<li>
+				<input id="alternativa_correta-4" name="alternativa_correta" type="radio" value="e">
+				<span class="bold">E. </span>
+				{{ form.alternativa_e }}
+			</li>
+		</ul>
+	</li>
+	<li>
+		<table>
+			<tr>
+				<td class="bold">Data de Envio</td>
+				<td>{{ form.data_de_envio }}</td>
+			</tr>
+			<tr>
+				<td class="bold">Enviada por</td>
+				<td>{{ form.enviada_por }}</td>
+			</tr>
+			<tr>
+				<td class="bold">Revisada por</td>
+				<td>{{ form.revisada_por }}</td>
+			</tr>
+			<tr>
+				<td class="bold">{{ form.status.label }}</td>
+				<td>{{ form.status }}</td>
+			</tr>
+			<tr>
+				<td class="bold">{{ form.observacoes.label }}</td>
+				<td>{{ form.observacoes(class="txt-observacoes") }}</td>
+			</tr>
+		</table>
+	</li>
+	<li>
+		<input type="submit" class="btn center" value="Revisar" />
+	</li>
+</ul>
+</form>
+{% endblock %}

@@ -37,10 +37,6 @@ class QuestaoForm(Form):
 		self.alternativa_correta.data = questao.alternativa_correta
 
 
-class QuestaoRespostaForm(Form):
-	pass
-
-
 class QuestaoRevisarForm(Form):
 	enunciado = Label('Enunciado', '')
 	alternativa_a = Label('Alternativa A', '')
@@ -48,7 +44,7 @@ class QuestaoRevisarForm(Form):
 	alternativa_c = Label('Alternativa C', '')
 	alternativa_d = Label('Alternativa D', '')
 	alternativa_e = Label('Alternativa E', '')
-	alternativa_correta = Label('Alternativa Correta', '')
+	alternativa_correta = RadioField('Alternativa Correta', default='a', choices=[('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E')], validators=[Required('Escolha uma das opções disponibilizadas como resposta.')])
 	data_de_envio = Label('Data de Envio', '')
 	enviada_por = Label('Enviada por', '')
 	revisada_por = Label('Revisada por', '')
@@ -62,7 +58,7 @@ class QuestaoRevisarForm(Form):
 		self.alternativa_c = questao.alternativa_c
 		self.alternativa_d = questao.alternativa_d
 		self.alternativa_e = questao.alternativa_e
-		self.alternativa_correta = questao.alternativa_correta
+		self.alternativa_correta.data = questao.alternativa_correta
 		self.data_de_envio = questao.data_de_envio_f1
 		self.enviada_por = questao.enviada_por_usuario
 		self.revisada_por = questao.revisada_por_usuario or ''

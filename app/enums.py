@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from enum import Enum
 
 
@@ -27,3 +28,7 @@ class PartidasRespostaResultado(Enum):
     acertou = 1
     aguardando = 2
     pulou = 3
+
+class UsuarioRole(Enum):
+    admin = 0
+    user = 1

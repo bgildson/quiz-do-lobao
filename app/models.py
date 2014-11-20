@@ -2,7 +2,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from app import db
-from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado
+from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, UsuarioRole
 import hashlib
 from datetime import datetime
 
@@ -15,7 +15,7 @@ class Usuario(db.Model):
 	email = db.Column(db.String, unique=True)
 	senha = db.Column(db.String(32))
 	data_cadastro = db.Column(db.DateTime)
-	role = db.Column(db.String)
+	role = db.Column(db.Integer)
 	ativo = db.Column(db.Boolean)
 
 	def __init__(self, usuario, email, senha):
@@ -23,7 +23,7 @@ class Usuario(db.Model):
 		self.email = email.lower()
 		self.senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
 		self.data_cadastro = datetime.now()
-		self.role = 'usr'
+		self.role = UsuarioRole.user
 		self.ativo = True
 
 	def to_dict(self):
@@ -41,7 +41,7 @@ class Usuario(db.Model):
 		return False
 
 	def is_admin(self):
-		return self.role == 'admin'
+		return self.role == UsuarioRole.admin.value
 
 	def get_id(self):
 		return self._id

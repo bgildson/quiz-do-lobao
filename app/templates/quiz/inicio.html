@@ -2,6 +2,10 @@
 
 {% block quiz %}
 
+{% for message in get_flashed_messages() %}
+<p class="center ele-space">{{message}}</p>
+{% endfor %}
+
 <ul class="list-left ele-space center">
 	<li><a href=" {{ url_for('quiz_novo') }} " class="btn"> Iniciar </a></li>
 	{% if continuar %}

@@ -3,9 +3,10 @@
 {% block questao %}
 
 {% for message in get_flashed_messages() %}
-	<h3 class="center ele-space">{{message}}</h3>
+	<p class="center ele-space">{{message}}</p>
 {% endfor %}
 
+{% if questoes %}
 <table class="lista-questoes tabela">
 	<tr>
 		<th class="l-q-enunciado">Enunciado</th>
@@ -15,11 +16,12 @@
 	{% for questao in questoes %}
 	<tr>
 		<td>{{ questao.enunciado }}</td>
-		<td><p class="center">{{ questao.data_de_envio_f1 }}</p></td>
-		<td><p class="center">{{ questao.status_descricao }}</p></td>
+		<td><p>{{ questao.data_de_envio_f1 }}</p></td>
+		<td><p>{{ questao.status_descricao }}</p></td>
 	</tr>
 	{% endfor %}
 </table>
+{% endif %}
 
 <a href="{{ url_for('questao_enviar') }}" class="btn center"> Enviar Questão </a>
 

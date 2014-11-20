@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import hashlib
-from flask import render_template, request, redirect, url_for, flash, jsonify
+import os
+from flask import render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask.ext.login import LoginManager, current_app, current_user, login_user, logout_user
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import aliased
 from sqlalchemy import and_
 from app import app, db, forms
 from app.models import Usuario, Questao, Partida, PartidaResposta
-from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, QuestaoAlternativaCorreta
+from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, QuestaoAlternativaCorreta, UsuarioRole
 from simplejson import dumps
 from functools import wraps
 
@@ -68,7 +69,16 @@ def load_user(id):
 @app.route('/')
 @login_required()
 def home():
-    return render_template('index.html', title='Home')
+    partida = db.session.query(Partida) \
+        .order_by(Partida.rodada) \
+        .all()
+    import pdb; pdb.set_trace()
+    return render_template('index.html')
+
+
+@app.route('/favicon.png')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path,'images'), 'favicon-quiz-do-lobao_128.png')
 
 
 '''''''''''''''''''''''''''''''''''''''''''''
@@ -168,17 +178,17 @@ def questao_enviar():
 
 
 @app.route('/questao/revisar')
-@login_required('admin')
+@login_required(UsuarioRole.admin.value)
 def questao_revisar():
     questoes = db.session.query(Questao) \
         .order_by(Questao.status) \
         .order_by(func.random()) \
         .limit(10)
-    return render_template('/questao/revisar.html', questoes=questoes)
+    return render_template('/revisao/listar.html', questoes=questoes)
 
 
 @app.route('/questao/revisar/<int:id>', methods=['GET', 'POST'])
-@login_required('admin')
+@login_required(UsuarioRole.admin.value)
 def questao_revisar_id(id):
 	form = forms.QuestaoRevisarForm()
 
@@ -195,7 +205,7 @@ def questao_revisar_id(id):
 			# revisar quais campos serao apresentados
 			form.init_from_Questao(questao)
 
-			return render_template('/questao/revisar_id.html', form=form, questao_id=questao._id)
+			return render_template('/revisao/revisar.html', form=form, questao_id=questao._id)
 
 		flash('A questão solicitada não existe ou não está mais disponível.')
 
@@ -237,7 +247,6 @@ def quiz_novo():
         .filter_by(usuario_id=current_user._id, finalizada=False) \
         .first()
 
-    # se o usuario ja tem alguma partida em aberto
     if partida:
         partida.finalizada = True
         db.session.commit()
@@ -251,7 +260,8 @@ def quiz_novo():
 
         return redirect(url_for('quiz'))
 
-    return jsonify({'status': RetornoResposta.error.value, 'message': 'Não foram encontradas questões para responder, por favor inicie uma nova partida ou tente continuar mais tarde.'})
+    flash('Não foram encontradas questões para responder, por favor, tente jogar mais tarde.')
+    return redirect(url_for('quiz_inicio'))
 
 
 @app.route('/quiz/rodada', methods=['POST'])
@@ -321,47 +331,49 @@ def quiz_pular():
     partida = db.session.query(Partida) \
         .filter_by(usuario_id=current_user._id, finalizada=False) \
         .first()
-
+    error_message = ''
     if partida:
         if partida.pular < 1:
-            flash('Você não pode mais pular questões.')
-            return redirect(url_for('quiz_rodada'))
+            error_message = 'Você não pode mais pular questões.'
+        else:
+            questao_atual = db.session.query(Questao) \
+                .filter_by(_id=partida.questao_atual) \
+                .first()
 
-        questao_atual = db.session.query(Questao) \
-            .filter_by(_id=partida.questao_atual) \
-            .first()
+            if questao_atual:
+                try:
+                    partidas_resposta = PartidaResposta(current_user._id, questao_atual._id,
+                                                        partida._id, '', PartidasRespostaResultado.pulou.value)
+                    db.session.add(partidas_resposta)
 
-        if questao_atual:
-            partidas_resposta = PartidaResposta(current_user._id, questao_atual._id,
-                                                partida._id, '', PartidasRespostaResultado.pulou.value)
-            db.session.add(partidas_resposta)
+                    partida.pular -= 1
+                    partida.questao_atual = get_questao(partida._id)._id
 
-            partida.pular -= 1
-            partida.questao_atual = get_questao(partida._id)._id
+                    db.session.commit()
+                    return jsonify({'status': RetornoResposta.continua.value})
+                except:
+                    db.session.rollback()
+                    error_message = 'Ocorreu um erro ao tentar processar sua requisição.'
+            else:
+                error_message = 'A questão da partida atual não foi encontrada, por favor, tente iniciar uma nova partida!'
+    else:
+        error_message = 'Não existe uma partida em andamento, por favor, tente iniciar uma nova partida!'
 
-            db.session.commit()
-            
-            return jsonify({'status': RetornoResposta.continua.value})
+    return jsonify({'status': RetornoResposta.error.value, 'message': error_message})
 
-        return jsonify({'status': RetornoResposta.error.value, 'message': 'Questão da partida atual não foi encontrada!'})        
 
-    return jsonify({'status': RetornoResposta.error.value, 'message': 'Não existe uma partida aberta!'})
-    
+@app.route('/quiz/cartas', methods=['POST'])
+def quiz_cartas():
+    pass
 
-# ajustar ainda ta toda errada
+
 def get_quiz_resultado():
-    usuario = aliased(Usuario)
-    partidas = db.session.query(Partida) \
-        .outerjoin((Partida, usuario)) \
-        .order_by('rodada').filter()
-    return partidas
+    pass
 
-
-@app.route('/quiz/resultado', methods=['GET', 'POST'])
+@app.route('/quiz/resultado')
 @login_required()
 def quiz_resultado():
     posicao_ranking = 1  # get_quiz_resultado()
     resultado = {'usuario': current_user.usuario,
-                 'posicao_ranking': posicao_ranking,
-                 }
+                 'posicao_ranking': posicao_ranking,}
     return render_template('/quiz/resultado.html', resultado=resultado)
