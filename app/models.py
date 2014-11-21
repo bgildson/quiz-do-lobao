@@ -23,7 +23,7 @@ class Usuario(db.Model):
 		self.email = email.lower()
 		self.senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
 		self.data_cadastro = datetime.now()
-		self.role = UsuarioRole.user
+		self.role = UsuarioRole.user.value
 		self.ativo = True
 
 	def to_dict(self):
@@ -158,6 +158,7 @@ class Partida(db.Model):
 				'cartas': self.cartas,
 				'pular': self.pular,
 				'finalizada': self.finalizada,
+				'data_da_partida': self.data_da_partida,
 				}
 
 

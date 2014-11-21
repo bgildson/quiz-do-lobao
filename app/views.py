@@ -5,7 +5,7 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, s
 from flask.ext.login import LoginManager, current_app, current_user, login_user, logout_user
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import aliased
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from app import app, db, forms
 from app.models import Usuario, Questao, Partida, PartidaResposta
 from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, QuestaoAlternativaCorreta, UsuarioRole
@@ -51,8 +51,8 @@ def QuestaoStatus_is_valid(status):
 def get_questao(partida_id_atual=0):
     partidas_resposta = aliased(PartidaResposta)
     questao = db.session.query(Questao) \
-        .outerjoin((partidas_resposta, and_(partidas_resposta.questao_id == Questao._id,
-                                            partidas_resposta.partida_id == partida_id_atual))) \
+        .outerjoin((partidas_resposta, and_(partidas_resposta.questao_id==Questao._id,
+                                            partidas_resposta.partida_id==partida_id_atual))) \
         .filter(and_(partidas_resposta._id == None)) \
         .filter(Questao.enviada_por != current_user._id) \
         .filter(Questao.status == QuestaoStatus.liberada.value) \
@@ -60,6 +60,22 @@ def get_questao(partida_id_atual=0):
         .first()
     return questao
 
+
+def get_ranking(quantos, usuario_id=0):
+    usuario = aliased(Usuario)
+    partidas = db.session.query(Partida) \
+        .join((usuario, usuario._id==Partida.usuario_id)) \
+        .order_by(Partida.rodada) \
+        .order_by(usuario.usuario) \
+        .filter(Partida.finalizada==True) \
+        .filter(or_(usuario._id==usuario_id, usuario_id==0)) \
+        .limit(quantos)
+    import pdb; pdb.set_trace()
+    return partidas
+
+def get_posicao_ranking(partida_id=0):
+    p = db.session.query(Partida._id, func.row_number().over(order_by=Partida._id).label('rownum')).all()
+    return p
 
 @lm.user_loader
 def load_user(id):
@@ -69,9 +85,11 @@ def load_user(id):
 @app.route('/')
 @login_required()
 def home():
-    partida = db.session.query(Partida) \
-        .order_by(Partida.rodada) \
-        .all()
+    partidas = get_ranking(10)
+    partidas = get_posicao_ranking()
+    for p in partidas:
+        #print(p.to_dict())
+        print(p)
     return render_template('index.html')
 
 
@@ -366,7 +384,7 @@ def quiz_cartas():
     pass
 
 
-def get_quiz_resultado():
+def get_quiz_resultado(partida_id):
     pass
 
 @app.route('/quiz/resultado')
