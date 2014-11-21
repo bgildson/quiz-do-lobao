@@ -5,7 +5,7 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, s
 from flask.ext.login import LoginManager, current_app, current_user, login_user, logout_user
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import aliased
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, over
 from app import app, db, forms
 from app.models import Usuario, Questao, Partida, PartidaResposta
 from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, QuestaoAlternativaCorreta, UsuarioRole
@@ -53,13 +53,12 @@ def get_questao(partida_id_atual=0):
     questao = db.session.query(Questao) \
         .outerjoin((partidas_resposta, and_(partidas_resposta.questao_id==Questao._id,
                                             partidas_resposta.partida_id==partida_id_atual))) \
-        .filter(and_(partidas_resposta._id == None)) \
+        .filter(partidas_resposta._id == None) \
         .filter(Questao.enviada_por != current_user._id) \
         .filter(Questao.status == QuestaoStatus.liberada.value) \
         .order_by(func.random()) \
         .first()
     return questao
-
 
 def get_ranking(quantos, usuario_id=0):
     usuario = aliased(Usuario)
@@ -74,7 +73,9 @@ def get_ranking(quantos, usuario_id=0):
     return partidas
 
 def get_posicao_ranking(partida_id=0):
-    p = db.session.query(Partida._id, func.row_number().over(order_by=Partida._id).label('rownum')).all()
+    p = db.session.query(Partida._id) \
+        .order_by(func.row_number().over(order_by=Partida._id)) \
+        .all()
     return p
 
 @lm.user_loader
@@ -86,7 +87,7 @@ def load_user(id):
 @login_required()
 def home():
     partidas = get_ranking(10)
-    partidas = get_posicao_ranking()
+    #partidas = get_posicao_ranking()
     for p in partidas:
         #print(p.to_dict())
         print(p)

@@ -124,7 +124,7 @@ class Questao(db.Model):
 	def revisada_por_usuario(self):
 		usuario = db.session.query(Usuario).filter_by(_id=self.revisada_por).first()
 		if usuario:
-			return usuario.usuario	
+			return usuario.usuario
 		return ''
 
 	@property
@@ -158,8 +158,12 @@ class Partida(db.Model):
 				'cartas': self.cartas,
 				'pular': self.pular,
 				'finalizada': self.finalizada,
-				'data_da_partida': self.data_da_partida,
-				}
+				'data_da_partida': self.data_da_partida,}
+
+	@property
+	def usuario(self):
+		usuario = db.session.query(Usuario).filter_by(_id=self._id).first()
+		return usuario.usuario if usuario else ''
 
 
 class PartidaResposta(db.Model):
