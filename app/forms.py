@@ -7,24 +7,24 @@ from flask.ext.wtf import form
 
 
 class UsuarioRegistroForm(Form):
-	usuario = TextField('Usuário', validators=[Required('O campo "Usuário" é obrigatório.'), Length(max=20, message='O nome do usuário deve conter no máximo 20 caracteres')])
-	email = TextField('E-mail', validators=[Required('O campo "E-mail" é obrigatório.'), Email('E-mail informado é inválido')])
-	senha = PasswordField('Senha', validators=[Required('O campo "Senha" é obrigatório.')])
-	confirma_senha = PasswordField('Confirmação de Senha', validators=[Required('O campo "Confirmação de Senha" é obrigatório.'), EqualTo('senha', 'Preencha os campos de senha corretamente.')])
+	usuario = TextField('Usuário', validators=[Required('Campo obrigatório.'), Length(max=20, message='O nome do usuário deve conter no máximo 20 caracteres')])
+	email = TextField('E-mail', validators=[Required('Campo obrigatório.'), Email('E-mail informado é inválido')])
+	senha = PasswordField('Senha', validators=[Required('Campo obrigatório.')])
+	confirma_senha = PasswordField('Confirmação de Senha', validators=[Required('Campo obrigatório.'), EqualTo('senha', 'Preencha os campos de senha corretamente.')])
 
 
 class UsuarioLoginForm(Form):
-	usuario = TextField('Usuário', validators=[Required('O campo "Usuário" é obrigatório.')])
-	senha = PasswordField('Senha', validators=[Required('O campo "Senha" é obrigatório.')])
+	usuario = TextField('Usuário', validators=[Required('Campo obrigatório.')])
+	senha = PasswordField('Senha', validators=[Required('Campo obrigatório.')])
 
 
 class QuestaoForm(Form):
-	enunciado = TextAreaField('Enunciado', validators=[Required('O campo obrigatório')])
-	alternativa_a = TextField('Alternativa A', validators=[Required('O campo obrigatório')])
-	alternativa_b = TextField('Alternativa B', validators=[Required('O campo obrigatório')])
-	alternativa_c = TextField('Alternativa C', validators=[Required('O campo obrigatório')])
-	alternativa_d = TextField('Alternativa D', validators=[Required('O campo obrigatório')])
-	alternativa_e = TextField('Alternativa E', validators=[Required('O campo obrigatório')])
+	enunciado = TextAreaField('Enunciado', validators=[Required('Campo obrigatório')])
+	alternativa_a = TextField('Alternativa A', validators=[Required('Campo obrigatório')])
+	alternativa_b = TextField('Alternativa B', validators=[Required('Campo obrigatório')])
+	alternativa_c = TextField('Alternativa C', validators=[Required('Campo obrigatório')])
+	alternativa_d = TextField('Alternativa D', validators=[Required('Campo obrigatório')])
+	alternativa_e = TextField('Alternativa E', validators=[Required('Campo obrigatório')])
 	alternativa_correta = RadioField('Alternativa Correta', default='a', choices=[('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E')], validators=[Required('Escolha uma das opções disponibilizadas como resposta.')])
 	
 	def init_from_Questao(self, questao):

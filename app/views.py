@@ -132,7 +132,7 @@ def registro():
 
     if form.validate_on_submit():
         usuario = db.session.query(Usuario) \
-            .filter(Usuario.usuario.lower()==form.usuario.data.lower()) \
+            .filter(func.lower(Usuario.usuario)==form.usuario.data.lower()) \
             .first()
         email = db.session.query(Usuario) \
             .filter_by(email=form.email.data.lower()) \
