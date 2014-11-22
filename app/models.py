@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey, and_
+from sqlalchemy.orm import relationship, aliased
 from app import db
 from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, UsuarioRole
 import hashlib
@@ -19,7 +19,7 @@ class Usuario(db.Model):
 	ativo = db.Column(db.Boolean)
 
 	def __init__(self, usuario, email, senha):
-		self.usuario = usuario.lower()
+		self.usuario = usuario
 		self.email = email.lower()
 		self.senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
 		self.data_cadastro = datetime.now()
@@ -118,14 +118,17 @@ class Questao(db.Model):
 
 	@property
 	def enviada_por_usuario(self):
-		return db.session.query(Usuario).filter_by(_id=self.enviada_por).first().usuario or ''
+		usuario = db.session.query(Usuario).filter_by(_id=self.enviada_por).first()
+		return usuario.usuario if usuario else ''
 
 	@property
 	def revisada_por_usuario(self):
 		usuario = db.session.query(Usuario).filter_by(_id=self.revisada_por).first()
-		if usuario:
-			return usuario.usuario
-		return ''
+		return usuario.usuario if usuario else ''
+
+	@property
+	def data_de_envio_f0(self):
+		return self.data_de_envio.strftime('%d/%m/%Y')
 
 	@property
 	def data_de_envio_f1(self):
@@ -138,7 +141,7 @@ class Partida(db.Model):
 	usuario_id = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
 	data_da_partida = db.Column(db.DateTime)
 	questao_atual = db.Column(db.Integer, ForeignKey('cad_questoes._id'), nullable=False)
-	rodada = db.Column(db.Integer)
+	acertos = db.Column(db.Integer)
 	cartas = db.Column(db.Integer)
 	pular = db.Column(db.Integer)
 	finalizada = db.Column(db.Boolean)
@@ -148,23 +151,43 @@ class Partida(db.Model):
 		self.usuario_id = usuario_id
 		self.data_da_partida = datetime.now()
 		self.questao_atual = questao_id
-		self.rodada = 1
+		self.acertos = 0
 		self.cartas = 1
 		self.pular = 3
 		self.finalizada = False
 
 	def to_dict(self):
-		return {'rodada': self.rodada,
+		return {'acertos': self.acertos,
 				'cartas': self.cartas,
 				'pular': self.pular,
 				'finalizada': self.finalizada,
 				'data_da_partida': self.data_da_partida,}
 
 	@property
+	def posicao(self):
+		print('ouxe0')
+		#p = aliased(Partida)
+		print(dir(self))
+		pos = self.query.order_by(self.acertos.desc(), self.usuario.desc()).limit(10).all() # \
+		print('ouxe1')
+		#p = aliased(Partida)
+		#pos = db.session.query(p) \
+		#	.order_by(p.acertos.desc(), p.usuario.desc()).limit(10) # \
+			#.filter(and_(Partida.acertos >= self.acertos, Partida.usuario < self.usuario)) \
+			#.limit(10)
+		print('ouxe2')
+		import pdb; pdb.set_trace()
+
+		return pos
+
+	@property
 	def usuario(self):
-		usuario = db.session.query(Usuario).filter_by(_id=self._id).first()
+		usuario = db.session.query(Usuario).filter_by(_id=self.usuario_id).first()
 		return usuario.usuario if usuario else ''
 
+	@property
+	def data_da_partida_f0(self):
+		return self.data_da_partida.strftime('%d/%m/%Y')
 
 class PartidaResposta(db.Model):
 	__tablename__ = 'partidas_resposta'

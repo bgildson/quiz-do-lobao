@@ -64,18 +64,19 @@ def get_ranking(quantos, usuario_id=0):
     usuario = aliased(Usuario)
     partidas = db.session.query(Partida) \
         .join((usuario, usuario._id==Partida.usuario_id)) \
-        .order_by(Partida.rodada) \
+        .order_by(Partida.acertos.desc()) \
         .order_by(usuario.usuario) \
+        .filter(usuario._id != None) \
         .filter(Partida.finalizada==True) \
         .filter(or_(usuario._id==usuario_id, usuario_id==0)) \
         .limit(quantos)
-    import pdb; pdb.set_trace()
     return partidas
 
 def get_posicao_ranking(partida_id=0):
     p = db.session.query(Partida._id) \
-        .order_by(func.row_number().over(order_by=Partida._id)) \
+        .order_by(Partida.acertos) \
         .all()
+    #import pdb; pdb.set_trace()
     return p
 
 @lm.user_loader
@@ -86,11 +87,11 @@ def load_user(id):
 @app.route('/')
 @login_required()
 def home():
-    partidas = get_ranking(10)
+    #partidas = get_ranking(10)
     #partidas = get_posicao_ranking()
-    for p in partidas:
-        #print(p.to_dict())
-        print(p)
+    #p = get_posicao_ranking()
+    #import pdb; pdb.set_trace()
+
     return render_template('index.html')
 
 
@@ -131,7 +132,7 @@ def registro():
 
     if form.validate_on_submit():
         usuario = db.session.query(Usuario) \
-            .filter_by(usuario=form.usuario.data.lower()) \
+            .filter(Usuario.usuario.lower()==form.usuario.data.lower()) \
             .first()
         email = db.session.query(Usuario) \
             .filter_by(email=form.email.data.lower()) \
@@ -326,7 +327,7 @@ def quiz_responder():
 
                 status = RetornoResposta.continua.value
                 if acertou:
-                    partida.rodada += 1
+                    partida.acertos += 1
                     partida.questao_atual = get_questao(partida._id)._id
                 else:
                     partida.finalizada = True
@@ -395,3 +396,20 @@ def quiz_resultado():
     resultado = {'usuario': current_user.usuario,
                  'posicao_ranking': posicao_ranking,}
     return render_template('/quiz/resultado.html', resultado=resultado)
+
+
+@login_required()
+@app.route('/ranking')
+def ranking():
+    return ranking_x(10)
+
+
+@login_required()
+@app.route('/ranking/<int:max>')
+def ranking_x(max):
+    partidas = get_ranking(max)
+
+    if partidas:
+        return render_template('/ranking/Xmelhores.html', partidas=partidas, max=max)
+    flash('Ainda não existem partidas para o ranking.')
+    return redirect( url_for('home') )

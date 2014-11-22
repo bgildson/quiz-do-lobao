@@ -9,7 +9,7 @@
 	<li class="enunciado">
 		{{ form.enunciado(placeholder='Enunciado') }}
 		<span class="red bold">*
-		{% for error in form.alternativa_a.errors %}
+		{% for error in form.enunciado.errors %}
 			[{{ error }}]
 		{% endfor %}
 		</span>

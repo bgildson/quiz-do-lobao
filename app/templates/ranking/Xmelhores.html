@@ -1,0 +1,38 @@
+{% extends 'logado.html' %}
+
+{% block conteudo %}
+
+	<ul class="panel">
+		<li class="panel-head">
+			<p>Ranking</p>
+		</li>
+		<li class="panel-body">
+
+			{% if partidas %}
+
+			<div class="submenu bold m-bottom">
+				<p>{{max}} Melhores Resultados</p>
+			</div>
+
+			<table class="txt-center tabela">
+				<tr>
+					<th class="r-posicao">Posição</th>
+					<th class="r-usuario">Usuário</th>
+					<th class="r-data">Data</th>
+					<th class="r-acertos">Acertos</th>
+				</tr>
+				{% for partida in partidas %}
+				<tr>
+					<td><p>{{ partida.posicao }}<p></td>
+					<td><p class="a">{{ partida.usuario }}</p></td>
+					<td><p>{{ partida.data_da_partida_f0 }}</p></td>
+					<td><p>{{ partida.acertos }}</p></td>
+				</tr>
+				{% endfor %}
+			</table>
+			{% endif %}
+
+		<li>
+	</ul>
+
+{% endblock %}

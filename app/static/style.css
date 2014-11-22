@@ -115,6 +115,9 @@ body {
 .copyright a {
 	font-style: italic;
 }
+.txt-center {
+	text-align: center;
+}
 .lista-questoes {
 	text-align: center;
 }
@@ -180,12 +183,12 @@ body {
 #usuario-conteudo {
 	width: 680px;
 }
-#questao-menu {
+#questao-menu, .submenu {
 	background: #263A4A;
 	height: 50px;
 	color: #D1DADE;
 }
-#questao-menu p {
+#questao-menu p, .submenu p {
 	display: inline;
 	line-height: 50px;
 	padding-left: 20px;
@@ -214,4 +217,16 @@ body {
 }
 #alternativas ul li:nth-child(1n+2) {
 	padding-top: 20px;
+}
+.r-posicao {
+	width: 50px;
+}
+.r-usuario {
+	width: 300px;
+}
+.r-data {
+	width: 200px;	
+}
+.r-acertos {
+	width: 100px;
 }

@@ -6,7 +6,7 @@
 	function ajusta_rodada(){
 		$.post("{{url_for('quiz_rodada')}}")
 			.done(function(data){
-				$("#rodada").text("RODADA " + data.partida['rodada']);
+				$("#rodada").text("RODADA " + (data.partida['acertos'] + 1));
 				$("#cartas").text("Cartas (" + data.partida['cartas'] + ")");
 				$("#pular").text("Pular (" + data.partida['pular'] + ")");
 
