@@ -28,7 +28,9 @@ class PartidasRespostaResultado(Enum):
     acertou = 1
     aguardando = 2
     pulou = 3
+    cartas = 4
 
 class UsuarioRole(Enum):
     admin = 0
     user = 1
+    supervisor = 2

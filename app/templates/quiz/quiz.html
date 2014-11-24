@@ -7,8 +7,8 @@
 		$.post("{{url_for('quiz_rodada')}}")
 			.done(function(data){
 				$("#rodada").text("RODADA " + (data.partida['acertos'] + 1));
-				$("#cartas").text("Cartas (" + data.partida['cartas'] + ")");
-				$("#pular").text("Pular (" + data.partida['pular'] + ")");
+				$("#cartas").val("Cartas (" + data.partida['cartas'] + ")");
+				$("#pular").val("Pular (" + data.partida['pular'] + ")");
 
 				$("#questao-enunciado").text(data.questao['enunciado']);
 				$("#alternativa_a").text(data.questao['alternativa_a']);
@@ -21,6 +21,9 @@
 				$("#revisado-por").text(data.questao['revisada_por']);
 
 				$("input:radio[name=alternativa][value=a]").prop('checked', true);
+
+				$("#error").text("");
+				$("#message").text("");
 			})
 			.fail(function(fail){
 				$("#error").text('Ocorreu um erro ao tentar atualizar a partida, por favor, tente mais tarde.');
@@ -52,7 +55,7 @@
 		$("#pular").bind('click', function(){
 			$.post("{{ url_for('quiz_pular') }}")
 				.done(function(data){
-					var acertou = data['status'];
+					var status = data['status'];
 					if(status==0){
 						$("#error").text(data['message']);
 					}else if (status==1){
@@ -63,28 +66,29 @@
 					}
 				})
 				.fail(function(fail){
+					ajusta_rodada();
 					$("#error").text('Ocorreu um erro ao tentar pular a questão, por favor, tente mais tarde.');
 				});
-			ajusta_rodada();
 		});
 
 		$("#cartas").bind('click', function(){
+			ajusta_rodada();
 			$.post("{{ url_for('quiz_cartas') }}")
 				.done(function(data){
-					var acertou = data['status'];
+					var status = data['status'];
 					if(status==0){
 						$("#error").text(data['message']);
 					}else if (status==1){
-						ajusta_rodada();
-						$("#message").text("");
+						var alternativa_correta = data['alternativa_correta'];
+						$("input:radio[name=alternativa][value=" + alternativa_correta + "]").prop('checked', true);
+						$("#message").text("Você acabou de usar as cartas. A alternativa correta é a \"" + alternativa_correta + "\".");
 					}else{
 						$("#error").text("A solicitação não foi ");
 					}
 				})
 				.fail(function(fail){
-					$("#error").text('Ocorreu um erro ao tentar pular a questão, por favor, tente mais tarde.');
+					$("#error").text('Ocorreu um erro ao tentar usar as cartas, por favor, tente mais tarde.');
 				});
-			ajusta_rodada();
 		});
 	});
 </script>
@@ -92,14 +96,14 @@
 
 {% block quiz %}
 
-<p id="error" class="red ele-space"></p>
-<p id="message" class="ele-space"></p>
+<p id="error" class="red ele-space txt-center"></p>
+<p id="message" class="ele-space txt-center" ></p>
 
 <div id="questao-menu">
 	<p id="rodada">RODADA X</p>
 	<ul class="list-left">
-		<li><a href="#" id="cartas">Cartas (X)</a></li>
-		<li><a href="#" id="pular">Pular (X)</a></li>
+		<li><input type="button" id="cartas" value="Cartas (X)" /></li>
+		<li><input type="button" id="pular" value="Pular (X)" /></li>
 	</ul>
 </div>
 

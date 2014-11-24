@@ -2,4 +2,62 @@
 
 {% block conteudo %}
 	
+	<ul class="panel">
+		<li class="panel-head">
+			<p>Melhores Resultados</p>
+		</li>
+		<li class="panel-body">
+
+			{% if partidas_melhores %}
+
+			<table class="txt-center tabela tabela-m-r">
+				<tr>
+					<th>Meu Ranking</th>
+					<th>Ranking Geral</th>
+					<th>Data</th>
+					<th>Acertos</th>
+				</tr>
+				{% for partida in partidas_melhores %}
+				<tr>
+					<td><p>{{ partida.posicao }}<p></td>
+					<td><p></p></td>
+					<td><p>{{ partida.data_da_partida_f0 }}</p></td>
+					<td><p>{{ partida.acertos }}</p></td>
+				</tr>
+				{% endfor %}
+			</table>
+			{% endif %}
+
+		<li>
+	</ul>
+
+	<ul class="panel">
+		<li class="panel-head">
+			<p>Últimas Partidas</p>
+		</li>
+		<li class="panel-body">
+
+			{% if partidas_ultimas %}
+
+			<table class="txt-center tabela tabela-m-r">
+				<tr>
+					<th>Meu Ranking</th>
+					<th>Ranking Geral</th>
+					<th>Data</th>
+					<th>Acertos</th>
+				</tr>
+				{% for partida in partidas_ultimas %}
+				<tr>
+					<td><p>{{ partida.posicao }}<p></td>
+					<td><p></p></td>
+					<td><p>{{ partida.data_da_partida_f0 }}</p></td>
+					<td><p>{{ partida.acertos }}</p></td>
+				</tr>
+				{% endfor %}
+			</table>
+			{% endif %}
+
+		<li>
+	</ul>
+	
 {% endblock %}

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import ForeignKey, and_
+from sqlalchemy import ForeignKey, and_, or_
 from sqlalchemy.orm import relationship, aliased
+from sqlalchemy.sql.expression import func
 from app import db
 from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, UsuarioRole
 import hashlib
@@ -28,8 +29,7 @@ class Usuario(db.Model):
 
 	def to_dict(self):
 		return {'id': self._id,
-				'usuario': self.usuario,
-				}
+				'usuario': self.usuario,}
 
 	def is_authenticated(self):
 		return True
@@ -66,7 +66,7 @@ class Questao(db.Model):
 	enviada_por = db.Column(db.Integer, ForeignKey('usuarios._id'), nullable=False)
 	revisada_por = db.Column(db.Integer, ForeignKey('usuarios._id'))
 	observacoes = db.Column(db.String(100))
-	partidas = relationship('Partida')
+	partidas_resposta = relationship('PartidaResposta')
 
 	def __init__(self, enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, alternativa_correta, usuario_id):
 		self.enunciado = enunciado
@@ -134,6 +134,7 @@ class Questao(db.Model):
 	def data_de_envio_f1(self):
 		return self.data_de_envio.strftime('%d/%m/%Y %H:%M')
 
+
 class Partida(db.Model):
 	__tablename__ = 'partidas'
 
@@ -164,21 +165,12 @@ class Partida(db.Model):
 				'data_da_partida': self.data_da_partida,}
 
 	@property
-	def posicao(self):
-		print('ouxe0')
-		#p = aliased(Partida)
-		print(dir(self))
-		pos = self.query.order_by(self.acertos.desc(), self.usuario.desc()).limit(10).all() # \
-		print('ouxe1')
-		#p = aliased(Partida)
-		#pos = db.session.query(p) \
-		#	.order_by(p.acertos.desc(), p.usuario.desc()).limit(10) # \
-			#.filter(and_(Partida.acertos >= self.acertos, Partida.usuario < self.usuario)) \
-			#.limit(10)
-		print('ouxe2')
+	def posicao_meu_ranking(self):
 		import pdb; pdb.set_trace()
-
-		return pos
+		posicao = db.session.query(Partida) \
+			.filter(Partida.acertos>self.acertos) \
+			.count()
+		return posicao
 
 	@property
 	def usuario(self):
@@ -198,7 +190,7 @@ class PartidaResposta(db.Model):
 	partida_id = db.Column(db.Integer, ForeignKey('partidas._id'), nullable=False)
 	alternativa_respondida = db.Column(db.String(1))
 	resultado = db.Column(db.Integer)
-
+	
 	def __init__(self, usuario_id, questao_id, partida_id, alternativa_respondida, resultado=PartidasRespostaResultado.aguardando.value):
 		self.usuario_id = usuario_id
 		self.questao_id = questao_id

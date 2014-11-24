@@ -16,14 +16,13 @@
 
 			<table class="txt-center tabela">
 				<tr>
-					<th class="r-posicao">Posição</th>
 					<th class="r-usuario">Usuário</th>
-					<th class="r-data">Data</th>
-					<th class="r-acertos">Acertos</th>
+					<th class="r-data">Data de Cadastro</th>
+					<th class="r-acertos">Ativo</th>
 				</tr>
 				{% for partida in partidas %}
 				<tr>
-					<td><p>{{ partida.posicao_meu_ranking }}<p></td>
+					<td><p>{{ partida.posicao }}<p></td>
 					<td><p class="a">{{ partida.usuario }}</p></td>
 					<td><p>{{ partida.data_da_partida_f0 }}</p></td>
 					<td><p>{{ partida.acertos }}</p></td>

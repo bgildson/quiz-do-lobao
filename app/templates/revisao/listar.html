@@ -6,6 +6,11 @@
 	<p class="center ele-space">{{message}}</p>
 {% endfor %}
 
+{% if questoes_nao_revisadas %}
+<div class="submenu bold m-bottom">
+	<p>Não Revisadas</p>
+</div>
+
 <table class="lista-questoes tabela">
 	<tr>
 		<th class="l-q-enunciado">Enunciado</th>
@@ -13,14 +18,64 @@
 		<th class="l-q-status">Status</th>
 		<th class="l-q-enviada-por">Enviada Por</th>
 	</tr>
-	{% for questao in questoes %}
+	{% for questao in questoes_nao_revisadas %}
 	<tr>
-		<td><a href="/questao/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
+		<td><a href="/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
 		<td><p class="center">{{ questao.data_de_envio_f1 }}</p></td>
 		<td><p class="center">{{ questao.status_descricao }}</p></td>
 		<td><p class="center">{{ questao.enviada_por_usuario }}</p></td>
 	</tr>
 	{% endfor %}
 </table>
+
+{% endif %}
+
+{% if questoes_liberadas %}
+<div class="submenu bold m-bottom">
+	<p>Liberadas</p>
+</div>
+
+<table class="lista-questoes tabela">
+	<tr>
+		<th class="l-q-enunciado">Enunciado</th>
+		<th class="l-q-data-de-cadastro">Data de Envio</th>
+		<th class="l-q-status">Status</th>
+		<th class="l-q-enviada-por">Enviada Por</th>
+	</tr>
+	{% for questao in questoes_liberadas %}
+	<tr>
+		<td><a href="/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
+		<td><p class="center">{{ questao.data_de_envio_f1 }}</p></td>
+		<td><p class="center">{{ questao.status_descricao }}</p></td>
+		<td><p class="center">{{ questao.enviada_por_usuario }}</p></td>
+	</tr>
+	{% endfor %}
+</table>
+
+{% endif %}
+
+{% if questoes_bloqueadas %}
+<div class="submenu bold m-bottom">
+	<p>Bloqueadas</p>
+</div>
+
+<table class="lista-questoes tabela">
+	<tr>
+		<th class="l-q-enunciado">Enunciado</th>
+		<th class="l-q-data-de-cadastro">Data de Envio</th>
+		<th class="l-q-status">Status</th>
+		<th class="l-q-enviada-por">Enviada Por</th>
+	</tr>
+	{% for questao in questoes_bloqueadas %}
+	<tr>
+		<td><a href="/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
+		<td><p class="center">{{ questao.data_de_envio_f1 }}</p></td>
+		<td><p class="center">{{ questao.status_descricao }}</p></td>
+		<td><p class="center">{{ questao.enviada_por_usuario }}</p></td>
+	</tr>
+	{% endfor %}
+</table>
+
+{% endif %}
 
 {% endblock %}

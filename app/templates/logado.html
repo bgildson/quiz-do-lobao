@@ -14,11 +14,20 @@
 				<li><a href="{{ url_for('logout') }}">Sair</a></li>
 			</ul>
 			
+			{# admin #}
 			{% if current_user.is_admin() %}
 			<ul>
 				<li><a href="{{ url_for('home') }}" class="upper">Admin</a></li>
 				<li><a href="{{ url_for('questao_revisar') }}">Revisar</a></li>
 				<li><a href="#">Usuários</a></li>
+			</ul>
+			{% endif %}
+			
+			{# supervisor #}
+			{% if current_user.role == 2 %}
+			<ul>
+				<li><a href="{{ url_for('home') }}" class="upper">Supervisor</a></li>
+				<li><a href="{{ url_for('questao_revisar') }}">Revisar</a></li>
 			</ul>
 			{% endif %}
 		</li>
