@@ -477,6 +477,11 @@ def quiz_resultado():
     return render_template('/quiz/resultado.html', resultado=resultado)
 
 
+'''''''''''''''''''''''''''''''''''''''''''''
+' RANKING
+'''''''''''''''''''''''''''''''''''''''''''''
+
+
 @login_required()
 @app.route('/ranking')
 def ranking():
@@ -492,3 +497,14 @@ def ranking_x(max):
         return render_template('/ranking/Xmelhores.html', partidas=partidas, max=max)
     flash('Ainda não existem partidas para o ranking.')
     return redirect( url_for('home') )
+
+
+@login_required()
+@app.route('/usuario/<int:id>')
+@login_required(UsuarioRole.admin.value)
+def ranking_x(id):
+    usuario = db.session.query(Usuario) \
+        .filter_by(_id=id)
+        .first()
+    if usuario:
+        pass
