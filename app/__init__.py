@@ -16,4 +16,5 @@ from app.models import *
 db.create_all()
 
 # carrega as toras da aplicacao
-from app import views
+#from app import views
+from . import controllers

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import ForeignKey, and_, or_
+from sqlalchemy import ForeignKey, and_, or_, text
 from sqlalchemy.orm import relationship, aliased
 from sqlalchemy.sql.expression import func
 from app import db
@@ -166,9 +166,11 @@ class Partida(db.Model):
 
 	@property
 	def posicao_meu_ranking(self):
-		import pdb; pdb.set_trace()
+		usuario = aliased(Usuario)
 		posicao = db.session.query(Partida) \
-			.filter(Partida.acertos>self.acertos) \
+			.join((usuario, usuario._id==Partida.usuario_id)) \
+			.filter(or_(Partida.acertos>self.acertos, 
+						Partida.acertos==self.acertos)) \
 			.count()
 		return posicao
 
