@@ -64,3 +64,13 @@ def registro():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+@app.route('/usuario/editar/<str:nome_usuario>')
+def usuario_editar_admin(nome_usuario):
+    usuario = db.session.query(Usuario).filter_by(usuario=nome_usuario).first()
+    if usuario:
+        form = forms.UsuarioEditarAdmin(usuario)
+        return render_template('usuario/editar_admin.html', form=form)
+    flash('Usuário "%s" não encontrado!' % nome_usuario)
+    return redirect(url_for('home'))

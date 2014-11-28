@@ -1,0 +1,37 @@
+{% extends 'logado.html' %}
+{% block conteudo %}
+	
+	<ul class="panel">
+		<li class="panel-head">
+			<p>Usuário - {{form.usuario}}</p>
+		</li>
+		<li class="panel-body">
+
+			<table class="txt-center tabela">
+				<tr>
+					<td><p>{{form._id.label}}</p></td>
+					<td><a>{{form._id}}</p></td>
+				</tr>
+				<tr>
+					<td><p>{{ form.usuario.label }}</p></td>
+					<td><p>{{ form.usuario }}</p></td>
+				</tr>
+				<tr>
+					<td><p>{{ form.email.label }}</p></td>
+					<td><p>{{ form.email }}</p></td>
+				</tr>
+				<tr>
+					<td><p>{{ form.senha.label }}</p></td>
+					<td><p>{{ form.senha }}</p></td>
+				</tr>
+				<tr>
+					<td><p>{{ form.status.label }}</p></td>
+					<td><p>{{ form.status }}</p></td>
+				</tr>
+
+			</table>
+
+		<li>
+	</ul>
+
+{% endblock %}

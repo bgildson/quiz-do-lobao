@@ -64,3 +64,21 @@ class QuestaoRevisarForm(Form):
 		self.revisada_por = questao.revisada_por_usuario or ''
 		self.status.data = str(questao.status)
 		self.observacoes.data = questao.observacoes
+
+class UsuarioEditarAdmin(Form):
+	_id = Label('Id', '')
+	usuario = Label('Usuário', '')
+	email = Label('E-mail', '')
+	senha = Label('Senha', '')
+	data_de_cadastro = Label('Data de Cadastro', '')
+	role = SelectField('Status', choices=[(str(x.value), x.name) for x in UsuarioRole], default='1')
+	ativo = BooleanField('Ativo?', default=True)
+	
+	def __init__(self, usuario):
+		self._id = usuario._id
+		self.usuario = usuario.usuario
+		self.email = usuario.email
+		self.senha = usuario.senha
+		self.data_de_cadastro = usuario.data_de_cadastro
+		self.role = usuario.role
+		self.ativo = usuario.ativo
