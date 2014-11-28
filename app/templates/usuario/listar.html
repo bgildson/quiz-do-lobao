@@ -4,32 +4,30 @@
 
 	<ul class="panel">
 		<li class="panel-head">
-			<p>Ranking</p>
+			<p>Usuários</p>
 		</li>
 		<li class="panel-body">
 
-			{% if partidas %}
-
-			<div class="submenu bold m-bottom">
-				<p>{{max}} Melhores Resultados</p>
-			</div>
+			{% for message in get_flashed_messages() %}
+			<p class="ele-space center"> {{ message }} </p>
+			{% endfor %}
 
 			<table class="txt-center tabela">
 				<tr>
+					<th class="r-usuario">ID</th>
 					<th class="r-usuario">Usuário</th>
 					<th class="r-data">Data de Cadastro</th>
-					<th class="r-acertos">Ativo</th>
+					<th class="r-acertos">Ativo?</th>
 				</tr>
-				{% for partida in partidas %}
+				{% for usuario in usuarios %}
 				<tr>
-					<td><p>{{ partida.posicao }}<p></td>
-					<td><p class="a">{{ partida.usuario }}</p></td>
-					<td><p>{{ partida.data_da_partida_f0 }}</p></td>
-					<td><p>{{ partida.acertos }}</p></td>
+					<td><p>{{ usuario._id }}<p></td>
+					<td><a href="/usuario/editar/{{usuario.usuario}}" class="a">{{ usuario.usuario }}</p></td>
+					<td><p>{{ usuario.data_de_cadastro_f0 }}</p></td>
+					<td><p>{{ usuario.ativo_texto }}</p></td>
 				</tr>
 				{% endfor %}
 			</table>
-			{% endif %}
 
 		<li>
 	</ul>

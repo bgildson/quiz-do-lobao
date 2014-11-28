@@ -4,6 +4,7 @@ from wtforms import TextField, PasswordField, TextAreaField, RadioField, Boolean
 from wtforms.validators import Required, Length, EqualTo, Email
 from werkzeug.datastructures import MultiDict
 from flask.ext.wtf import form
+from app.enums import UsuarioRole
 
 
 class UsuarioRegistroForm(Form):
@@ -66,19 +67,19 @@ class QuestaoRevisarForm(Form):
 		self.observacoes.data = questao.observacoes
 
 class UsuarioEditarAdmin(Form):
-	_id = Label('Id', '')
-	usuario = Label('Usuário', '')
-	email = Label('E-mail', '')
-	senha = Label('Senha', '')
-	data_de_cadastro = Label('Data de Cadastro', '')
+	_id = Label('_id', '')
+	usuario = Label('usuario', '')
+	email = Label('email', '')
+	senha = Label('senha', '')
+	data_de_cadastro = Label('data_de_cadastro', '')
 	role = SelectField('Status', choices=[(str(x.value), x.name) for x in UsuarioRole], default='1')
 	ativo = BooleanField('Ativo?', default=True)
 	
-	def __init__(self, usuario):
+	def init_from_Usuario(self, usuario):
 		self._id = usuario._id
 		self.usuario = usuario.usuario
 		self.email = usuario.email
 		self.senha = usuario.senha
-		self.data_de_cadastro = usuario.data_de_cadastro
-		self.role = usuario.role
-		self.ativo = usuario.ativo
+		self.data_de_cadastro = usuario.data_cadastro
+		self.role.data = str(usuario.role)
+		self.ativo.data = usuario.ativo

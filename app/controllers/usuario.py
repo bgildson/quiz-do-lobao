@@ -4,7 +4,9 @@ from flask import render_template, redirect, url_for, flash
 from flask.ext.login import current_user, login_user, logout_user
 from sqlalchemy.sql.expression import func
 from app import app, db, forms
+from app.enums import UsuarioRole
 from app.models import Usuario
+from .__shared__ import login_required
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -66,11 +68,28 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/usuario/editar/<str:nome_usuario>')
+@app.route('/usuario')
+@login_required(UsuarioRole.admin.value)
+def usuario():
+    usuarios = db.session.query(Usuario).order_by(func.random()).all() #.limit(5) -depois adicionar filtro e colocar limit de usuario que devem aparecer
+    return render_template('usuario/listar.html', usuarios=usuarios)
+
+
+@app.route('/usuario/editar/<string:nome_usuario>', methods=['GET', 'POST'])
+@login_required(UsuarioRole.admin.value)
 def usuario_editar_admin(nome_usuario):
-    usuario = db.session.query(Usuario).filter_by(usuario=nome_usuario).first()
+    usuario = db.session.query(Usuario) \
+        .filter(func.lower(Usuario.usuario)==nome_usuario.lower()) \
+        .first()
     if usuario:
-        form = forms.UsuarioEditarAdmin(usuario)
+        form = forms.UsuarioEditarAdmin()
+        if form.validate_on_submit():
+            usuario.editar_admin(form)
+            db.session.commit()
+            flash('Usuário \'%s\' editado com sucesso!' % usuario.usuario)
+            return redirect(url_for('usuario'))
+        form.init_from_Usuario(usuario)
         return render_template('usuario/editar_admin.html', form=form)
     flash('Usuário "%s" não encontrado!' % nome_usuario)
-    return redirect(url_for('home'))
+    return redirect(url_for('usuario'))
+

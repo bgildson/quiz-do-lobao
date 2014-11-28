@@ -27,6 +27,22 @@ class Usuario(db.Model):
 		self.role = UsuarioRole.user.value
 		self.ativo = True
 
+	@property
+	def data_de_cadastro_f0(self):
+		return self.data_cadastro.strftime('%d/%m/%Y')
+
+	@property
+	def data_de_cadastro_f1(self):
+		return self.data_cadastro.strftime('%d/%m/%Y %H:%M')
+
+	@property
+	def ativo_texto(self):
+		return 'Ativo' if self.ativo else 'Inativo'
+
+	def editar_admin(self, form):
+		self.role = form.role.data
+		self.ativo = form.ativo.data
+
 	def to_dict(self):
 		return {'id': self._id,
 				'usuario': self.usuario,}
@@ -68,7 +84,8 @@ class Questao(db.Model):
 	observacoes = db.Column(db.String(100))
 	partidas_resposta = relationship('PartidaResposta')
 
-	def __init__(self, enunciado, alternativa_a, alternativa_b, alternativa_c, alternativa_d, alternativa_e, alternativa_correta, usuario_id):
+	def __init__(self, enunciado, alternativa_a, alternativa_b, alternativa_c,
+				 alternativa_d, alternativa_e, alternativa_correta, usuario_id):
 		self.enunciado = enunciado
 		self.alternativa_a = alternativa_a
 		self.alternativa_b = alternativa_b
@@ -118,12 +135,16 @@ class Questao(db.Model):
 
 	@property
 	def enviada_por_usuario(self):
-		usuario = db.session.query(Usuario).filter_by(_id=self.enviada_por).first()
+		usuario = db.session.query(Usuario) \
+			.filter_by(_id=self.enviada_por) \
+			.first()
 		return usuario.usuario if usuario else ''
 
 	@property
 	def revisada_por_usuario(self):
-		usuario = db.session.query(Usuario).filter_by(_id=self.revisada_por).first()
+		usuario = db.session.query(Usuario) \
+			.filter_by(_id=self.revisada_por) \
+			.first()
 		return usuario.usuario if usuario else ''
 
 	@property

@@ -6,31 +6,42 @@
 			<p>Usuário - {{form.usuario}}</p>
 		</li>
 		<li class="panel-body">
-
-			<table class="txt-center tabela">
+			<form action="#" method="POST">
+			{{ form.hidden_tag() }}
+			<table class="ele-space center">
 				<tr>
-					<td><p>{{form._id.label}}</p></td>
-					<td><a>{{form._id}}</p></td>
+					<td>ID </td>
+					<td>{{form._id}}</td>
 				</tr>
 				<tr>
-					<td><p>{{ form.usuario.label }}</p></td>
-					<td><p>{{ form.usuario }}</p></td>
+					<td>Usuário</td>
+					<td>{{ form.usuario }}</td>
 				</tr>
 				<tr>
-					<td><p>{{ form.email.label }}</p></td>
-					<td><p>{{ form.email }}</p></td>
+					<td>E-mail</td>
+					<td>{{ form.email }}</td>
 				</tr>
 				<tr>
-					<td><p>{{ form.senha.label }}</p></td>
-					<td><p>{{ form.senha }}</p></td>
+					<td>Data de Cadastro</td>
+					<td>{{ form.data_de_cadastro_f1 }}</td>
 				</tr>
 				<tr>
-					<td><p>{{ form.status.label }}</p></td>
-					<td><p>{{ form.status }}</p></td>
+					<td>Senha</td>
+					<td>{{ form.senha }}</td>
 				</tr>
-
+				<tr>
+					<td>{{form.role.label}}</td>
+					<td>{{ form.role }}</td>
+				</tr>
+				<tr>
+					<td>Ativo?</td>
+					<td>{{ form.ativo }}</td>
+				</tr>
+				<tr>
+					<td colspan="2"><input type="submit" class="btn center" value="Salvar" ></td>
+				</tr>
 			</table>
-
+			</form>
 		<li>
 	</ul>
 
