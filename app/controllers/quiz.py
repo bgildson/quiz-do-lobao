@@ -161,6 +161,14 @@ def quiz_pular():
                 .filter_by(_id=partida.questao_atual) \
                 .first()
 
+            partida_resposta = db.session.query(PartidaResposta) \
+                .filter(and_(PartidaResposta.partida_id==partida._id,
+                             PartidaResposta.questao_id==questao_atual._id)) \
+                .first()
+
+            if partida_resposta:
+                partida.cartas -= 1
+
             if questao_atual:
                 try:
                     partidas_resposta = PartidaResposta(current_user._id, questao_atual._id,
