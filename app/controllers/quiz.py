@@ -236,7 +236,11 @@ def get_quiz_resultado(partida_id):
 @app.route('/quiz/resultado')
 @login_required()
 def quiz_resultado():
-    posicao_ranking = 1  # get_quiz_resultado()
+    partida = db.session.query(Partida) \
+        .filter(Partida.usuario_id==current_user._id) \
+        .order_by(Partida.data_da_partida.desc()) \
+        .first()
+    posicao_ranking = partida.posicao_ranking
     resultado = {'usuario': current_user.usuario,
                  'posicao_ranking': posicao_ranking,}
     return render_template('/quiz/resultado.html', resultado=resultado)

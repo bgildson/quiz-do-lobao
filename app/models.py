@@ -187,13 +187,27 @@ class Partida(db.Model):
 
 	@property
 	def posicao_meu_ranking(self):
+		posicao = db.session.query(Partida) \
+			.filter(Partida.usuario_id==self.usuario_id,
+					or_(Partida.acertos>self.acertos, 
+						and_(Partida._id<self._id,
+							 Partida.acertos==self.acertos))) \
+			.count()
+		return posicao + 1
+
+	@property
+	def posicao_ranking(self):
 		usuario = aliased(Usuario)
 		posicao = db.session.query(Partida) \
 			.join((usuario, usuario._id==Partida.usuario_id)) \
 			.filter(or_(Partida.acertos>self.acertos, 
-						Partida.acertos==self.acertos)) \
+						and_(usuario.usuario<self.usuario,
+							 Partida.acertos==self.acertos),
+						and_(Partida._id<self._id,
+							 Partida.usuario_id==self.usuario_id,
+							 Partida.acertos==self.acertos))) \
 			.count()
-		return posicao
+		return posicao + 1
 
 	@property
 	def usuario(self):
@@ -203,6 +217,10 @@ class Partida(db.Model):
 	@property
 	def data_da_partida_f0(self):
 		return self.data_da_partida.strftime('%d/%m/%Y')
+
+	@property
+	def data_da_partida_c(self):
+		return self.data_da_partida.strftime('%Y-%m-%d %H:%M:%S')
 
 class PartidaResposta(db.Model):
 	__tablename__ = 'partidas_resposta'

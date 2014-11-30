@@ -19,8 +19,8 @@
 				</tr>
 				{% for partida in partidas_melhores %}
 				<tr>
-					<td><p>{{ partida.posicao }}<p></td>
-					<td><p></p></td>
+					<td><p>{{ partida.posicao_meu_ranking }}<p></td>
+					<td><p>{{ partida.posicao_ranking }}</p></td>
 					<td><p>{{ partida.data_da_partida_f0 }}</p></td>
 					<td><p>{{ partida.acertos }}</p></td>
 				</tr>
@@ -48,8 +48,8 @@
 				</tr>
 				{% for partida in partidas_ultimas %}
 				<tr>
-					<td><p>{{ partida.posicao }}<p></td>
-					<td><p></p></td>
+					<td><p>{{ partida.posicao_meu_ranking }}<p></td>
+					<td><p>{{ partida.posicao_ranking }}</p></td>
 					<td><p>{{ partida.data_da_partida_f0 }}</p></td>
 					<td><p>{{ partida.acertos }}</p></td>
 				</tr>

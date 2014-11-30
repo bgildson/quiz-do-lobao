@@ -71,7 +71,7 @@ def logout():
 @app.route('/usuario')
 @login_required(UsuarioRole.admin.value)
 def usuario():
-    usuarios = db.session.query(Usuario).order_by(func.random()).all() #.limit(5) -depois adicionar filtro e colocar limit de usuario que devem aparecer
+    usuarios = db.session.query(Usuario).order_by('usuario').all() #.limit(5) -depois adicionar filtro e colocar limit de usuario que devem aparecer
     return render_template('usuario/listar.html', usuarios=usuarios)
 
 
