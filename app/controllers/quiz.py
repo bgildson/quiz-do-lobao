@@ -96,12 +96,13 @@ def quiz_rodada():
 @login_required()
 def quiz_responder():
     resposta = request.form['resposta']
-
+    error = 'A resposta enviada é inválida!'
     if QuestaoAlternativaCorreta_is_valid(resposta):
         partida = db.session.query(Partida) \
             .filter_by(usuario_id=current_user._id, finalizada=False) \
             .first()
 
+        error_message = 'Usuário não tem uma partida aberta!'
         if partida:
             questao_respondida = db.session.query(Questao) \
                 .filter_by(_id=partida.questao_atual) \
@@ -117,6 +118,8 @@ def quiz_responder():
                     .filter_by(partida_id=partida._id,
                                questao_id=questao_respondida._id) \
                     .first()
+
+                error_message = "Ocorreu um erro ao tentar processar sua resposta."
                 if partidas_resposta:
                     if partidas_resposta.resultado == PartidasRespostaResultado.cartas.value:
                         partida.cartas -= 1
@@ -130,6 +133,7 @@ def quiz_responder():
                 status = RetornoResposta.continua.value
                 if acertou:
                     partida.acertos += 1
+                    error_message = "No momento não existem questões disponíveis para responder."
                     partida.questao_atual = get_questao(partida._id)._id
                 else:
                     partida.finalizada = True
@@ -140,11 +144,8 @@ def quiz_responder():
 
             except:
                 db.session.rollback()
-                return jsonify({'status': RetornoResposta.error.value, 'message': 'Ocorreu um erro ao tentar processar sua resposta, por favor, tente mais tarde!'})
-
-        return jsonify({'status': RetornoResposta.error.value, 'message': 'Usuário não tem uma partida aberta!'})
-
-    return jsonify({'status': RetornoResposta.error.value, 'message': 'A resposta enviada é inválida!'})
+                
+    return jsonify({'status': RetornoResposta.error.value, 'message': error_message})
 
 
 @app.route('/quiz/pular', methods=['POST'])
@@ -152,7 +153,8 @@ def quiz_pular():
     partida = db.session.query(Partida) \
         .filter_by(usuario_id=current_user._id, finalizada=False) \
         .first()
-    error_message = ''
+        
+    error_message = 'Não existe uma partida em andamento, por favor, tente iniciar uma nova partida!'
     if partida:
         if partida.pular < 1:
             error_message = 'Você não pode mais pular questões.'
@@ -169,6 +171,7 @@ def quiz_pular():
             if partida_resposta:
                 partida.cartas -= 1
 
+            error_message = 'A questão da partida atual não foi encontrada, por favor, tente iniciar uma nova partida!'
             if questao_atual:
                 try:
                     partidas_resposta = PartidaResposta(current_user._id, questao_atual._id,
@@ -176,17 +179,13 @@ def quiz_pular():
                     db.session.add(partidas_resposta)
 
                     partida.pular -= 1
+                    error_message = 'No momento não existem questões disponíveis para responder.'
                     partida.questao_atual = get_questao(partida._id)._id
 
                     db.session.commit()
                     return jsonify({'status': RetornoResposta.continua.value})
                 except:
                     db.session.rollback()
-                    error_message = 'Ocorreu um erro ao tentar processar sua requisição.'
-            else:
-                error_message = 'A questão da partida atual não foi encontrada, por favor, tente iniciar uma nova partida!'
-    else:
-        error_message = 'Não existe uma partida em andamento, por favor, tente iniciar uma nova partida!'
 
     return jsonify({'status': RetornoResposta.error.value, 'message': error_message})
 

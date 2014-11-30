@@ -6,6 +6,7 @@
 	function ajusta_rodada(){
 		$.post("{{url_for('quiz_rodada')}}")
 			.done(function(data){
+
 				$("#rodada").text("RODADA " + (data.partida['acertos'] + 1));
 				$("#cartas").val("Cartas (" + data.partida['cartas'] + ")");
 				$("#pular").val("Pular (" + data.partida['pular'] + ")");
@@ -17,8 +18,8 @@
 				$("#alternativa_d").text(data.questao['alternativa_d']);
 				$("#alternativa_e").text(data.questao['alternativa_e']);
 
-				$("#enviado-por").text(data.questao['enviada_por']);
-				$("#revisado-por").text(data.questao['revisada_por']);
+				$("#enviada-por").text(data.questao['enviada_por']);
+				$("#revisada-por").text(data.questao['revisada_por']);
 
 				$("input:radio[name=alternativa][value=a]").prop('checked', true);
 
@@ -43,7 +44,7 @@
 						ajusta_rodada();
 					}else if(status==2){ // fim_partida
 						window.location.replace("{{url_for('quiz_resultado')}}");
-					}else{
+					}else{ // resposta desconhecida
 						$("#error").text('Ocorreu um erro ao tentar enviar sua resposta, por favor, tente mais tarde.');
 					}
 				})
@@ -107,6 +108,8 @@
 	</ul>
 </div>
 
+<div id="load" class="center"><img src="/static/load01.gif" /></div>
+
 <ul id="questao">
 	<li>
 		<p id="questao-enunciado" class="enunciado"></p>
@@ -132,6 +135,6 @@
 		</ul>
 	</li>
 </ul>
-<p class="right copyright">enviado por <span class="a" id="enviado-por"></span> - revisado por <span class="a" id="revisado-por"></span></p>
+<p class="right copyright">enviada por <span class="a" id="enviada-por"></span> - revisada por <span class="a" id="revisada-por"></span></p>
 
 {% endblock %}
