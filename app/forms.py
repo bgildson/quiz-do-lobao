@@ -8,9 +8,9 @@ from app.enums import UsuarioRole
 
 
 class UsuarioRegistroForm(Form):
-	usuario = TextField('Usuário', validators=[Required('Campo obrigatório.'), Length(max=20, message='O nome do usuário deve conter no máximo 20 caracteres')])
+	usuario = TextField('Usuário', validators=[Required('Campo obrigatório.'), Length(min=5, max=20, message='O nome do usuário deve conter de 5 a 20 caracteres')])
 	email = TextField('E-mail', validators=[Required('Campo obrigatório.'), Email('E-mail informado é inválido')])
-	senha = PasswordField('Senha', validators=[Required('Campo obrigatório.')])
+	senha = PasswordField('Senha', validators=[Required('Campo obrigatório.'), Length(min=5, max=20, message='A senha deve conter de 5 a 20 caracteres')])
 	confirma_senha = PasswordField('Confirmação de Senha', validators=[Required('Campo obrigatório.'), EqualTo('senha', 'Preencha os campos de senha corretamente.')])
 
 
@@ -72,7 +72,7 @@ class UsuarioEditarAdmin(Form):
 	email = Label('email', '')
 	senha = Label('senha', '')
 	data_de_cadastro = Label('data_de_cadastro', '')
-	role = SelectField('Status', choices=[(str(x.value), x.name) for x in UsuarioRole], default='1')
+	role = SelectField('Grupo', choices=[(str(x.value), x.name) for x in UsuarioRole], default='1')
 	ativo = BooleanField('Ativo?', default=True)
 	
 	def init_from_Usuario(self, usuario):
@@ -80,6 +80,6 @@ class UsuarioEditarAdmin(Form):
 		self.usuario = usuario.usuario
 		self.email = usuario.email
 		self.senha = usuario.senha
-		self.data_de_cadastro = usuario.data_cadastro
+		self.data_de_cadastro = usuario.data_de_cadastro_f1
 		self.role.data = str(usuario.role)
 		self.ativo.data = usuario.ativo

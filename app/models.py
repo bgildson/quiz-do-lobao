@@ -15,7 +15,7 @@ class Usuario(db.Model):
 	usuario = db.Column(db.String(20), unique=True)
 	email = db.Column(db.String, unique=True)
 	senha = db.Column(db.String(32))
-	data_cadastro = db.Column(db.DateTime)
+	data_de_cadastro = db.Column(db.DateTime)
 	role = db.Column(db.Integer)
 	ativo = db.Column(db.Boolean)
 
@@ -23,17 +23,17 @@ class Usuario(db.Model):
 		self.usuario = usuario
 		self.email = email.lower()
 		self.senha = hashlib.md5(senha.encode('utf-8')).hexdigest()
-		self.data_cadastro = datetime.now()
+		self.data_de_cadastro = datetime.now()
 		self.role = UsuarioRole.user.value
 		self.ativo = True
 
 	@property
 	def data_de_cadastro_f0(self):
-		return self.data_cadastro.strftime('%d/%m/%Y')
+		return self.data_de_cadastro.strftime('%d/%m/%Y')
 
 	@property
 	def data_de_cadastro_f1(self):
-		return self.data_cadastro.strftime('%d/%m/%Y %H:%M')
+		return self.data_de_cadastro.strftime('%d/%m/%Y %H:%M')
 
 	@property
 	def ativo_texto(self):
