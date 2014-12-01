@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
-from flask import render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask.ext.login import current_user
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import func
 from sqlalchemy import and_, or_
-from app import app, db, forms
-from app.models import Questao, Partida, PartidaResposta
-from app.enums import RetornoResposta, PartidasRespostaResultado, QuestaoAlternativaCorreta, QuestaoStatus
-from .__shared__ import login_required
+from .. import db, forms
+from ..models import Questao, Partida, PartidaResposta
+from ..enums import RetornoResposta, PartidasRespostaResultado, QuestaoAlternativaCorreta, QuestaoStatus
+from ..util import login_required
+
+
+quiz = Blueprint('quiz', __name__, url_prefix='/quiz')
 
 
 def QuestaoAlternativaCorreta_is_valid(resposta):
@@ -27,9 +30,9 @@ def get_questao(partida_id_atual=0):
     return questao
 
 
-@app.route('/quiz')
+@quiz.route('/')
 @login_required()
-def quiz():
+def jogo():
     partida = db.session.query(Partida) \
         .filter_by(usuario_id=current_user._id, finalizada=False) \
         .first()
@@ -37,12 +40,12 @@ def quiz():
     if partida:
         return render_template('quiz/quiz.html')
 
-    return redirect(url_for('quiz_inicio'))
+    return redirect(url_for('quiz.inicio'))
 
 
-@app.route('/quiz/inicio')
+@quiz.route('/inicio')
 @login_required()
-def quiz_inicio():
+def inicio():
     partida = db.session.query(Partida) \
         .filter_by(usuario_id=current_user._id, finalizada=False) \
         .first()
@@ -50,9 +53,9 @@ def quiz_inicio():
     return render_template('quiz/inicio.html', continuar=partida)
 
 
-@app.route('/quiz/novo')
+@quiz.route('/novo')
 @login_required()
-def quiz_novo():
+def novo():
     partida = db.session.query(Partida) \
         .filter_by(usuario_id=current_user._id, finalizada=False) \
         .first()
@@ -68,15 +71,15 @@ def quiz_novo():
         db.session.add(partida)
         db.session.commit()
 
-        return redirect(url_for('quiz'))
+        return redirect(url_for('quiz.jogo'))
 
     flash('Não foram encontradas questões para responder, por favor, tente jogar mais tarde.')
-    return redirect(url_for('quiz_inicio'))
+    return redirect(url_for('quiz.inicio'))
 
 
-@app.route('/quiz/rodada', methods=['POST'])
+@quiz.route('/rodada', methods=['POST'])
 @login_required()
-def quiz_rodada():
+def rodada():
     partida = db.session.query(Partida) \
         .filter_by(usuario_id=current_user._id, finalizada=False) \
         .first()
@@ -89,12 +92,12 @@ def quiz_rodada():
         if questao:
             return jsonify(partida=partida.to_dict(), questao=questao.to_dict())
 
-    return redirect(url_for('quiz_inicio'))
+    return redirect(url_for('quiz.inicio'))
 
 
-@app.route('/quiz/responder', methods=['POST'])
+@quiz.route('/responder', methods=['POST'])
 @login_required()
-def quiz_responder():
+def responder():
     resposta = request.form['resposta']
     error = 'A resposta enviada é inválida!'
     if QuestaoAlternativaCorreta_is_valid(resposta):
@@ -148,8 +151,8 @@ def quiz_responder():
     return jsonify({'status': RetornoResposta.error.value, 'message': error_message})
 
 
-@app.route('/quiz/pular', methods=['POST'])
-def quiz_pular():
+@quiz.route('/pular', methods=['POST'])
+def pular():
     partida = db.session.query(Partida) \
         .filter_by(usuario_id=current_user._id, finalizada=False) \
         .first()
@@ -190,8 +193,8 @@ def quiz_pular():
     return jsonify({'status': RetornoResposta.error.value, 'message': error_message})
 
 
-@app.route('/quiz/cartas', methods=['POST'])
-def quiz_cartas():
+@quiz.route('/cartas', methods=['POST'])
+def cartas():
     partida = db.session.query(Partida) \
         .filter_by(usuario_id=current_user._id, finalizada=False) \
         .first()
@@ -229,12 +232,9 @@ def quiz_cartas():
     return jsonify({'status': RetornoResposta.error.value, 'message': error_message})
 
 
-def get_quiz_resultado(partida_id):
-    pass
-
-@app.route('/quiz/resultado')
+@quiz.route('/resultado')
 @login_required()
-def quiz_resultado():
+def resultado():
     partida = db.session.query(Partida) \
         .filter(Partida.usuario_id==current_user._id) \
         .order_by(Partida.data_da_partida.desc()) \
@@ -242,4 +242,4 @@ def quiz_resultado():
     posicao_ranking = partida.posicao_ranking
     resultado = {'usuario': current_user.usuario,
                  'posicao_ranking': posicao_ranking,}
-    return render_template('/quiz/resultado.html', resultado=resultado)
+    return render_template('quiz/resultado.html', resultado=resultado)

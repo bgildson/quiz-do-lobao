@@ -7,9 +7,9 @@
 {% endfor %}
 
 <ul class="list-left ele-space center">
-	<li><a href=" {{ url_for('quiz_novo') }} " class="btn"> Iniciar </a></li>
+	<li><a href=" {{ url_for('quiz.novo') }} " class="btn"> Iniciar </a></li>
 	{% if continuar %}
-	<li><a href=" {{ url_for('quiz') }} " class="btn"> Continuar </a></li>
+	<li><a href=" {{ url_for('quiz.jogo') }} " class="btn"> Continuar </a></li>
 	{% endif %}
 </ul>
 

@@ -3,8 +3,14 @@
 {% block head %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
+	function show_error(error){
+		$("#error").text(error).show();
+	}
+	function show_message(message){
+		$("#message").text(message).show();
+	}
 	function ajusta_rodada(){
-		$.post("{{url_for('quiz_rodada')}}")
+		$.post("{{url_for('quiz.rodada')}}")
 			.done(function(data){
 
 				$("#rodada").text("RODADA " + (data.partida['acertos'] + 1));
@@ -23,11 +29,11 @@
 
 				$("input:radio[name=alternativa][value=a]").prop('checked', true);
 
-				$("#error").text("");
-				$("#message").text("");
+				$("#error").hide();
+				$("#message").hide();
 			})
 			.fail(function(fail){
-				$("#error").text('Ocorreu um erro ao tentar atualizar a partida, por favor, tente mais tarde.');
+				show_error('Ocorreu um erro ao tentar atualizar a partida, por favor, tente mais tarde.');
 			});
 	}
 	$(document).ready(function(){
@@ -35,60 +41,60 @@
 
 		$("#responder").bind('click', function(){
 			var resposta = $('input:radio[name=alternativa]:checked').val();
-			$.post("{{ url_for('quiz_responder') }}", {'resposta': resposta,})
+			$.post("{{ url_for('quiz.responder') }}", {'resposta': resposta,})
 				.done(function(data){
 					var status = data['status'];
 					if(status==0){ // error
-						$("#error").text(data['message']);
+						show_message(data['message']);
 					}else if(status==1){ // continua
 						ajusta_rodada();
 					}else if(status==2){ // fim_partida
-						window.location.replace("{{url_for('quiz_resultado')}}");
+						window.location.replace("{{url_for('quiz.resultado')}}");
 					}else{ // resposta desconhecida
-						$("#error").text('Ocorreu um erro ao tentar enviar sua resposta, por favor, tente mais tarde.');
+						show_error('Ocorreu um erro ao tentar enviar sua resposta, por favor, tente mais tarde.');
 					}
 				})
 				.fail(function(fail){
-					$("#error").text('Ocorreu um erro ao tentar enviar sua resposta, por favor, tente mais tarde.');
+					show_error('Ocorreu um erro ao tentar enviar sua resposta, por favor, tente mais tarde.');
 				});
 		});
 
 		$("#pular").bind('click', function(){
-			$.post("{{ url_for('quiz_pular') }}")
+			$.post("{{ url_for('quiz.pular') }}")
 				.done(function(data){
 					var status = data['status'];
 					if(status==0){
-						$("#error").text(data['message']);
+						show_message(data['message']);
 					}else if (status==1){
 						ajusta_rodada();
-						$("#message").text("Você acabou de pular uma questão.");
+						show_message("Você acabou de pular uma questão.");
 					}else{
-						$("#error").text('Ocorreu um erro ao tentar pular a questão, por favor, tente mais tarde.');
+						show_error('Ocorreu um erro ao tentar pular a questão, por favor, tente mais tarde.');
 					}
 				})
 				.fail(function(fail){
 					ajusta_rodada();
-					$("#error").text('Ocorreu um erro ao tentar pular a questão, por favor, tente mais tarde.');
+					show_error('Ocorreu um erro ao tentar pular a questão, por favor, tente mais tarde.');
 				});
 		});
 
 		$("#cartas").bind('click', function(){
 			ajusta_rodada();
-			$.post("{{ url_for('quiz_cartas') }}")
+			$.post("{{ url_for('quiz.cartas') }}")
 				.done(function(data){
 					var status = data['status'];
 					if(status==0){
-						$("#error").text(data['message']);
+						show_message(data['message']);
 					}else if (status==1){
 						var alternativa_correta = data['alternativa_correta'];
 						$("input:radio[name=alternativa][value=" + alternativa_correta + "]").prop('checked', true);
-						$("#message").text("Você acabou de usar as cartas. A alternativa correta é a \"" + alternativa_correta + "\".");
+						show_message("Você acabou de usar as cartas. A alternativa correta é a \"" + alternativa_correta + "\".");
 					}else{
-						$("#error").text("A solicitação não foi ");
+						show_error("A solicitação não foi ");
 					}
 				})
 				.fail(function(fail){
-					$("#error").text('Ocorreu um erro ao tentar usar as cartas, por favor, tente mais tarde.');
+					show_error('Ocorreu um erro ao tentar usar as cartas, por favor, tente mais tarde.');
 				});
 		});
 	});
@@ -107,8 +113,6 @@
 		<li><input type="button" id="pular" value="Pular (X)" /></li>
 	</ul>
 </div>
-
-<div id="load" class="center"><img src="/static/load01.gif" /></div>
 
 <ul id="questao">
 	<li>

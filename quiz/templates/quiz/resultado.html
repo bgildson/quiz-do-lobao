@@ -5,7 +5,7 @@
 <ul class="ele-space">
 	<li><h2 class="center">O jogo acabou.</h2></li>
 	<li><p  class="center">Parabéns {{ resultado.usuario }} você ficou em {{ resultado.posicao_ranking }}º lugar no ranking do quiz.</p></li>
-	<li><a href="{{ url_for('quiz_novo') }}" class="a center"> Jogar Novamente </a></li>
+	<li><a href="{{ url_for('quiz.novo') }}" class="a center"> Jogar Novamente </a></li>
 </ul>
 
 {% endblock %}

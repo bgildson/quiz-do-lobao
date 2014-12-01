@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block head %}{% endblock %}
+
+{% block logado %}
+<div id="conteudo">
+	<ul class="no-list list-left">
+		<li id="menu">
+			<ul>
+				<li><a href="{{ url_for('home.index') }}" class="upper">{{ current_user.usuario }}</a></li>
+				<li><a href="{{ url_for('quiz.inicio') }}">Quiz</a></li>
+				<li><a href="{{ url_for('questao.index') }}">Questões</a></li>
+				<li><a href="{{ url_for('home.ranking') }}">Ranking</a></li>
+				<li><a href="{{ url_for('home.logout') }}">Sair</a></li>
+			</ul>
+			
+			{# admin #}
+			{% if current_user.is_admin() %}
+			<ul>
+				<li><a href="{{ url_for('home.index') }}" class="upper">Admin</a></li>
+				<li><a href="{{ url_for('questao.revisar') }}">Revisar</a></li>
+				<li><a href="{{ url_for('usuario.index') }}">Usuários</a></li>
+			</ul>
+			{% endif %}
+			
+			{# supervisor #}
+			{% if current_user.role == 2 %}
+			<ul>
+				<li><a href="{{ url_for('home.index') }}" class="upper">Supervisor</a></li>
+				<li><a href="{{ url_for('questao_revisar') }}">Revisar</a></li>
+			</ul>
+			{% endif %}
+		</li>
+
+		<li id="usuario-conteudo">
+			{% block conteudo %}{% endblock %}
+		</li>
+	</ul>
+</div>
+{% endblock %}

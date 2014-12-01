@@ -1,6 +1,6 @@
-{% extends 'revisao/base.html' %}
-{% block revisao %}
-<form action="/revisar/{{ questao_id }}" method="POST">
+{% extends 'questao/base.html' %}
+{% block questao %}
+<form action="/questao/revisar/{{ questao_id }}" method="POST">
 <ul class="no-list ele-space">
 	{{ form.hidden_tag() }}
 	{% for message in get_flashed_messages() %}

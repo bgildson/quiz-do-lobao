@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from app import app
-
-# depois adicionar migrations para gerenciar as alterações no banco de dados
+from quiz import app
 
 if __name__ == '__main__':
     app.run(debug=True)

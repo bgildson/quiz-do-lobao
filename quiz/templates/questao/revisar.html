@@ -1,6 +1,6 @@
-{% extends 'revisao/base.html' %}
+{% extends 'questao/base.html' %}
 
-{% block revisao %}
+{% block questao %}
 
 {% for message in get_flashed_messages() %}
 	<p class="center ele-space">{{message}}</p>
@@ -20,7 +20,7 @@
 	</tr>
 	{% for questao in questoes_nao_revisadas %}
 	<tr>
-		<td><a href="/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
+		<td><a href="/questao/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
 		<td><p class="center">{{ questao.data_de_envio_f1 }}</p></td>
 		<td><p class="center">{{ questao.status_descricao }}</p></td>
 		<td><p class="center">{{ questao.enviada_por_usuario }}</p></td>
@@ -44,7 +44,7 @@
 	</tr>
 	{% for questao in questoes_liberadas %}
 	<tr>
-		<td><a href="/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
+		<td><a href="/questao/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
 		<td><p class="center">{{ questao.data_de_envio_f1 }}</p></td>
 		<td><p class="center">{{ questao.status_descricao }}</p></td>
 		<td><p class="center">{{ questao.enviada_por_usuario }}</p></td>
@@ -68,7 +68,7 @@
 	</tr>
 	{% for questao in questoes_bloqueadas %}
 	<tr>
-		<td><a href="/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
+		<td><a href="/questao/revisar/{{questao._id}}" class="a">{{ questao.enunciado }}</a></td>
 		<td><p class="center">{{ questao.data_de_envio_f1 }}</p></td>
 		<td><p class="center">{{ questao.status_descricao }}</p></td>
 		<td><p class="center">{{ questao.enviada_por_usuario }}</p></td>

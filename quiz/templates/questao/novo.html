@@ -1,6 +1,6 @@
 {% extends 'questao/base.html' %}
 {% block questao %}
-<form action="{{ url_for('questao_enviar') }}" method="POST">
+<form action="{{ url_for('questao.novo') }}" method="POST">
 <ul class="no-list ele-space">
 	{{ form.hidden_tag() }}
 	{% for message in get_flashed_messages() %}

@@ -9,9 +9,9 @@ from flask.ext.login import LoginManager, current_app, current_user, login_user,
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import aliased
 from sqlalchemy import and_, or_, over
-from app import app, db, forms
-from app.models import Usuario, Questao, Partida, PartidaResposta
-from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, QuestaoAlternativaCorreta, UsuarioRole
+from . import app, db, forms
+from .models import Usuario, Questao, Partida, PartidaResposta
+from .enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, QuestaoAlternativaCorreta, UsuarioRole
 from functools import wraps
 
 # decorator personalizado para implementar restricoes de acesso nas views

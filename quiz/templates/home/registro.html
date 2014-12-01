@@ -7,7 +7,7 @@
 	</li>
 	<li class="panel-body">
 
-		<form action=" {{ url_for('registro') }} " method="POST">
+		<form action=" {{ url_for('home.registro') }} " method="POST">
 		<table class="ele-space">
 			{{ form.hidden_tag() }}
 			{% for error in get_flashed_messages(category_filter=['registro']) %}
@@ -47,7 +47,7 @@
 				<td colspan="2"><input type="submit" value="Cadastrar" class="btn center" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><a href="{{ url_for('login') }}" class="center a">Fazer Login</a></td>
+				<td colspan="2"><a href="{{ url_for('home.login') }}" class="center a">Fazer Login</a></td>
 			</tr>
 		</table>
 		</form>

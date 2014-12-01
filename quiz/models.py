@@ -2,8 +2,8 @@
 from sqlalchemy import ForeignKey, and_, or_, text
 from sqlalchemy.orm import relationship, aliased
 from sqlalchemy.sql.expression import func
-from app import db
-from app.enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, UsuarioRole
+from . import db
+from .enums import QuestaoStatus, RetornoResposta, PartidasRespostaResultado, UsuarioRole
 import hashlib
 from datetime import datetime
 
@@ -12,7 +12,7 @@ class Usuario(db.Model):
 	__tablename__ = 'usuarios'
 
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	usuario = db.Column(db.String(20), unique=True)
+	usuario = db.Column(db.String(12), unique=True)
 	email = db.Column(db.String, unique=True)
 	senha = db.Column(db.String(32))
 	data_de_cadastro = db.Column(db.DateTime)
