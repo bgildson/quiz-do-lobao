@@ -2,3 +2,4 @@
 *.pyc
 *.sqlite
 *.TODO
+instance/
