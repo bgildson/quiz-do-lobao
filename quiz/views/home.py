@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import hashlib
-from flask import Blueprint, render_template, redirect, flash, url_for
+import os
+from flask import Blueprint, render_template, redirect, flash, url_for, send_from_directory
 from flask.ext.login import current_user, logout_user, login_user
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
-from .. import db, forms
+from .. import app, db, forms
 from ..models import Usuario, Partida
 from ..util import get_ranking, login_required
 
