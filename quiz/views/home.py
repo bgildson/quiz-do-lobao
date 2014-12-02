@@ -72,7 +72,6 @@ def login():
     form = forms.UsuarioLoginForm()
 
     if form.validate_on_submit():
-        import pdb; pdb.set_trace()
         usuario = db.session.query(Usuario) \
             .filter(func.lower(Usuario.usuario)==form.usuario.data.lower(), 
                     Usuario.senha==hashlib.md5(form.senha.data.encode('utf-8')).hexdigest(), 
