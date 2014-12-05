@@ -27,7 +27,7 @@
 			{% if current_user.role == 2 %}
 			<ul>
 				<li><a href="{{ url_for('home.index') }}" class="upper">Supervisor</a></li>
-				<li><a href="{{ url_for('questao_revisar') }}">Revisar</a></li>
+				<li><a href="{{ url_for('questao.revisar') }}">Revisar</a></li>
 			</ul>
 			{% endif %}
 		</li>
