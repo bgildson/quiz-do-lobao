@@ -8,7 +8,7 @@ from .enums import UsuarioRole
 
 
 class UsuarioRegistroForm(Form):
-	usuario = TextField('Usuário', validators=[Required('Campo obrigatório.'), Length(min=5, max=12, message='O nome do usuário deve conter de 5 a 20 caracteres')])
+	usuario = TextField('Usuário', validators=[Required('Campo obrigatório.'), Length(min=5, max=12, message='O nome do usuário deve conter de 5 a 12 caracteres')])
 	email = TextField('E-mail', validators=[Required('Campo obrigatório.'), Email('E-mail informado é inválido')])
 	senha = PasswordField('Senha', validators=[Required('Campo obrigatório.'), Length(min=5, max=20, message='A senha deve conter de 5 a 20 caracteres')])
 	confirma_senha = PasswordField('Confirmação de Senha', validators=[Required('Campo obrigatório.'), EqualTo('senha', 'Preencha os campos de senha corretamente.')])
