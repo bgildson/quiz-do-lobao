@@ -54,7 +54,7 @@ def novo():
 
 
 @questao.route('/revisar')
-@login_required(UsuarioRole.admin.value)
+@login_required(UsuarioRole.admin.value, UsuarioRole.supervisor.value)
 def revisar():
     questoes_nao_revisadas = db.session.query(Questao) \
         .filter_by(status=QuestaoStatus.nao_revisada.value) \
@@ -77,7 +77,7 @@ def revisar():
 
 
 @questao.route('/revisar/<int:id>', methods=['GET', 'POST'])
-@login_required(UsuarioRole.admin.value)
+@login_required(UsuarioRole.admin.value, UsuarioRole.supervisor.value)
 def revisar_id(id):
     form = forms.QuestaoRevisarForm()
     if id:
